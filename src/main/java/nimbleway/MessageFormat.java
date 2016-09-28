@@ -1,7 +1,7 @@
 package nimbleway;
 
 
-public interface SubProtocol {
+public interface MessageFormat {
 
 	/**
 	 * decodifica um subprotocol websocket

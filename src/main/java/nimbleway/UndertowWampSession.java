@@ -17,7 +17,7 @@ public class UndertowWampSession extends WampSession {
 	private Observable<WampMessage> onMessageObserver;
 	private Subscriber<? super WampMessage> onMessageSubscriber;
 
-	public UndertowWampSession(WebSocketChannel channel, SubProtocol subProtocol) {
+	public UndertowWampSession(WebSocketChannel channel, MessageFormat messageFormat) {
 
 		onMessageObserver = Observable.create((subscriber) -> {
 			onMessageSubscriber = subscriber;
@@ -30,7 +30,7 @@ public class UndertowWampSession extends WampSession {
 
 			public void decode(Object message) {
 				// decode message and send to observer
-				WampMessage decodedMessage = subProtocol.decode(message);
+				WampMessage decodedMessage = messageFormat.decode(message);
 				onMessageSubscriber.onNext(decodedMessage);
 			}
 

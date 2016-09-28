@@ -9,8 +9,10 @@ public class WampRouter {
 	private ServerConnection serverConnection;
 	private Observable<WampSession> onListen;
 	private Subscriber<? super WampSession> onListenSubscriber;
+	private WampContext wampContext;
 
 	public WampRouter(ServerConnection serverConnection) {
+		this.wampContext = new WampContext();
 		this.serverConnection = serverConnection;
 
 		onListen = Observable.create((subscriber) -> {
@@ -25,19 +27,22 @@ public class WampRouter {
 	}
 
 	public void listen(){
+		
 		serverConnection.onListen().subscribe((session)->{
+			
 			// delega a sessao recebida
-			
-			onListenSubscriber.onNext(session);
-			
 			session.onMessage().subscribe((msg)->{
-				System.out.println(Thread.currentThread().getName());
-				System.out.println(msg);
-				
+//				session.
 			});
 			
+			onListenSubscriber.onNext(session);
 		});
 
 		serverConnection.listen();
 	}
+	
+	
+	
+	
+	
 }

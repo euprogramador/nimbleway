@@ -24,13 +24,13 @@ import rx.schedulers.Schedulers;
 public class UndertowWebSocketServerConnection implements ServerConnection {
 
 	private URI uri;
-	private Map<String, SubProtocol> supportedSubProtocols;
+	private Map<String, MessageFormat> supportedSubProtocols;
 	private Observable<WampSession> onListen;
 
 	private Undertow server;
 	private Subscriber<? super WampSession> onListenObserver;
 
-	public UndertowWebSocketServerConnection(String uri, Map<String, SubProtocol> supportedSubProtocols) {
+	public UndertowWebSocketServerConnection(String uri, Map<String, MessageFormat> supportedSubProtocols) {
 		this.supportedSubProtocols = supportedSubProtocols;
 		try {
 			this.uri = new URI(uri);
@@ -53,7 +53,7 @@ public class UndertowWebSocketServerConnection implements ServerConnection {
 
 			@Override
 			public void onConnect(WebSocketHttpExchange exchange, WebSocketChannel channel) {
-				SubProtocol subProtocol = supportedSubProtocols.get(channel.getSubProtocol());
+				MessageFormat subProtocol = supportedSubProtocols.get(channel.getSubProtocol());
 
 				WampSession wampSession = new UndertowWampSession(channel, subProtocol);
 				onListenObserver.onNext(wampSession);
