@@ -5,6 +5,7 @@
 	<artifactId>nimbleway</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 
+
 	<build>
 		<finalName>teste</finalName>
 		<plugins>
@@ -52,6 +53,12 @@
 		</dependency>
 
 		<dependency>
+			<groupId>org.jdeferred</groupId>
+			<artifactId>jdeferred-core</artifactId>
+			<version>1.2.4</version>
+		</dependency>
+
+		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
 			<version>4.11</version>
@@ -74,4 +81,10 @@
 
 	</dependencies>
 
+	<packaging>pom</packaging>
+	<modules>
+		<module>nimbleway-core</module>
+		<module>nimbleway-websocket-undertow-connection</module>
+		<module>nimbleway-integration-test</module>
+	</modules>
 </project>
