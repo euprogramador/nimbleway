@@ -1,10 +1,12 @@
 import io.undertow.server.DefaultByteBufferPool;
 
-
 import java.net.URI;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import nimbleway.UndertowWebSocketClientConnection;
+import nimbleway.WampClient;
+import nimbleway.WampConnection;
 
 import org.xnio.OptionMap;
 import org.xnio.Options;
@@ -12,9 +14,6 @@ import org.xnio.Xnio;
 import org.xnio.XnioWorker;
 
 
-import br.com.aexo.nimbleway.UndertowWebSocketClientConnection;
-import br.com.aexo.nimbleway.WampClient;
-import br.com.aexo.nimbleway.WampConnection;
 
 public class Main {
 
@@ -40,6 +39,8 @@ public class Main {
 		client.onOpen((session) -> {
 			
 			session.register("soma",(call)->{
+				
+				System.out.println(Thread.currentThread().getName());
 				System.out.println("chamou");
 				
 				Integer p1 = call.params(0).as(Integer.class);
@@ -55,7 +56,7 @@ public class Main {
 					System.out.println("faz call");
 					session.call("soma",1,2).then((result)->{
 						System.out.println(result);
-						Integer i = result.as(Integer.class);
+						Long i = result.as(Long.class);
 						System.out.println("O resultado da soma foi: " + i);
 					});
 				}
