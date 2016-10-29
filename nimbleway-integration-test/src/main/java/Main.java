@@ -5,19 +5,21 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import nimbleway.UndertowWebSocketClientConnection;
-import nimbleway.WampClient;
-import nimbleway.WampConnection;
 
 import org.xnio.OptionMap;
 import org.xnio.Options;
 import org.xnio.Xnio;
 import org.xnio.XnioWorker;
 
+import br.com.aexo.nimbleway.WampClient;
+import br.com.aexo.nimbleway.WampConnection;
+
 
 
 public class Main {
 
 	public static void main(String[] args) throws Exception {
+		   System.setProperty(org.slf4j.impl.SimpleLogger.DEFAULT_LOG_LEVEL_KEY, "TRACE");
 
 		Xnio xnio = Xnio.getInstance("nio", Main.class.getClassLoader());
 
@@ -36,40 +38,45 @@ public class Main {
 
 		WampClient client = new WampClient(conn);
 		
+		client.onException((e)->{
+			System.out.println(e);
+			throw new RuntimeException(e);
+		});
+		
 		client.onOpen((session) -> {
-			
-			session.register("soma",(call)->{
-				
-				System.out.println(Thread.currentThread().getName());
-				System.out.println("chamou");
-				
-				Integer p1 = call.params(0).as(Integer.class);
-				Integer p2 = call.params(1).as(Integer.class);
-				
-				call.sendResult(p1+p2);
+			session.subscribe("com.myapp.mytopic1",(call)->{
+				System.out.println("invocado");
 			});
+//			
+//			session.register("soma",(call)->{
+//				Integer p1 = call.params(0).as(Integer.class);
+//				Integer p2 = call.params(1).as(Integer.class);
+//				call.sendResult(p1+p2);
+//			});
 			
+			
+			
+			Timer timer = new Timer();
 			
 			TimerTask timerTask = new TimerTask() {
 				@Override
 				public void run() {
-					System.out.println("faz call");
-					session.call("soma",1,2).then((result)->{
-						System.out.println(result);
-						Long i = result.as(Long.class);
-						System.out.println("O resultado da soma foi: " + i);
+					
+					session.publish("com.myapp.mytopic1","hello").done((r)->{
+						System.out.println("publicado");
 					});
+					
+//					session.call("soma",1,2).then((result)->{
+//						Long i = result.as(Long.class);
+//						System.out.println("O resultado da soma foi: " + i);
+//						timer.cancel();
+//						session.close();
+//					});
 				}
 			};
 			
 			
-			Timer timer = new Timer();
-			timer.scheduleAtFixedRate(timerTask,0,2000);
-			
-			
-			System.out.println("connectou");
-//			client.close();
-//			System.exit(0);
+			timer.schedule(timerTask, 5000);
 		});
 
 		client.open("realm1");
