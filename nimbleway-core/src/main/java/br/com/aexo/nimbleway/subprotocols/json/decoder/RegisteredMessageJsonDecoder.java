@@ -15,10 +15,10 @@ public class RegisteredMessageJsonDecoder implements JsonDecoderMessage<Register
 	public RegisteredMessage decode(Object o) {
 
 		ArrayNode raw = (ArrayNode) o;
-		Long idRequest = raw.get(1).asLong();
-		Long idRegistration = raw.get(2).asLong();
+		Long requestId = raw.get(1).asLong();
+		Long registrationId = raw.get(2).asLong();
 
-		return new RegisteredMessage(idRequest, idRegistration);
+		return new RegisteredMessage(requestId, registrationId);
 	}
 
 	@Override

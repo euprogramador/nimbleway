@@ -9,20 +9,21 @@ package br.com.aexo.nimbleway.messages;
 
 public class SubscribedMessage implements WampMessage {
 
-	private Long idRequest;
-	private Long idRegistration;
+	private Long requestId;
+	private Long registrationId;
 
-	public SubscribedMessage(Long idRequest, Long idRegistration) {
-		this.idRequest = idRequest;
-		this.idRegistration = idRegistration;
+	public SubscribedMessage(Long requestId, Long registrationId) {
+		this.requestId = requestId;
+		this.registrationId = registrationId;
 	}
 
-	public Long getIdRequest() {
-		return idRequest;
+	public Long getRequestId() {
+		return requestId;
 	}
 
-	public Long getIdRegistration() {
-		return idRegistration;
+
+	public Long getRegistrationId() {
+		return registrationId;
 	}
 
 }

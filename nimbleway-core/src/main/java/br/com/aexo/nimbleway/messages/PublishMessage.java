@@ -6,42 +6,40 @@ import org.jdeferred.Deferred;
 import org.jdeferred.Promise;
 import org.jdeferred.impl.DeferredObject;
 
-import br.com.aexo.nimbleway.WampResult;
+import br.com.aexo.nimbleway.Publication;
+import br.com.aexo.nimbleway.WampError;
 
-public class PublishMessage implements WampMessage {
+public class PublishMessage extends DeferredWampMessage<Publication, WampError> {
 
-	private Object[] params;
 	private Long id;
-	private Deferred<WampResult, Exception, Object> def;
-	private Promise<WampResult, Exception, Object> promise;
-	private String topic;
+	private Deferred<Publication, WampError, Object> def;
+	private Promise<Publication, WampError, Object> promise;
+	private Publication publication;
 
-	public PublishMessage(String topic, Object[] params) {
-		this.topic = topic;
+
+	public PublishMessage(Publication publication) {
 		this.id = ThreadLocalRandom.current().nextLong(10000000, 99999999);
-		this.params = params;
-		this.def = new DeferredObject<WampResult, Exception, Object>();
+		this.def = new DeferredObject<Publication, WampError, Object>();
 		this.promise = def.promise();
-	}
-
-	public Object[] getParams() {
-		return params;
-	}
-
-	public String getTopic() {
-		return topic;
+		this.publication = publication;
 	}
 
 	public Long getId() {
 		return id;
 	}
 
-	public Deferred<WampResult, Exception, Object> getDefered() {
-		return def;
+
+
+	public Publication getPublication() {
+		return publication;
 	}
 
-	public Promise<WampResult, Exception, Object> getPromise() {
+	public Promise<Publication, WampError, Object> getPromise() {
 		return promise;
+	}
+	
+	protected Deferred<Publication, WampError, Object> getDefered() {
+		return def;
 	}
 
 }

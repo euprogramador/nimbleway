@@ -1,17 +1,14 @@
 package br.com.aexo.nimbleway.messages;
 
-/**
- * represent wamp yield message
- * 
- * @author carlosr
- *
- */
+import br.com.aexo.nimbleway.Result;
+
+
 public class YieldMessage implements WampMessage {
 
 	private InvocationMessage inReplyTo;
-	private Object reply;
+	private Result reply;
 
-	public YieldMessage(InvocationMessage inReplyTo, Object reply) {
+	public YieldMessage(InvocationMessage inReplyTo, Result reply) {
 		this.inReplyTo = inReplyTo;
 		this.reply = reply;
 	}
@@ -20,7 +17,7 @@ public class YieldMessage implements WampMessage {
 		return inReplyTo;
 	}
 
-	public Object getReply() {
+	public Result getReply() {
 		return reply;
 	}
 

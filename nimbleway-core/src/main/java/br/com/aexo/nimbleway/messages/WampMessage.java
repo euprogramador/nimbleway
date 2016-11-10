@@ -7,5 +7,6 @@ package br.com.aexo.nimbleway.messages;
  *
  */
 public interface WampMessage {
+	
 
 }

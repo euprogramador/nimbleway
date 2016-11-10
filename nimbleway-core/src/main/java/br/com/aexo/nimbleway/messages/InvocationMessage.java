@@ -1,35 +1,43 @@
 package br.com.aexo.nimbleway.messages;
 
+import java.util.Map;
+
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 
-/**
- * represent wamp invocation message
- * 
- * @author carlosr
- *
- */
 public class InvocationMessage implements WampMessage {
 
-	private final Long idRequest;
-	private final Long idFunctionRegistration;
-	private final ArrayNode params;
+	private final Long requestId;
+	private final Long functionId;
+	private Map<String, Object> details;
+	private ArrayNode params;
+	private JsonNode payload;
 
-	public InvocationMessage(Long idRequest, Long idFunctionRegistration, ArrayNode params) {
-		this.idRequest = idRequest;
-		this.idFunctionRegistration = idFunctionRegistration;
+	public InvocationMessage(Long requestId, Long functionId, ArrayNode params, Map<String, Object> details, JsonNode payload) {
+		this.requestId = requestId;
+		this.functionId = functionId;
 		this.params = params;
+		this.details = details;
+		this.payload = payload;
 	}
 
-	public Long getIdRequest() {
-		return idRequest;
+	public Long getRequestId() {
+		return requestId;
 	}
 
-	public Long getIdFunctionRegisted() {
-		return idFunctionRegistration;
+	public Long getFunctionId() {
+		return functionId;
+	}
+
+	public Map<String, Object> getDetails() {
+		return details;
 	}
 
 	public ArrayNode getParams() {
 		return params;
 	}
 
+	public JsonNode getPayload() {
+		return payload;
+	}
 }

@@ -1,10 +1,13 @@
 package br.com.aexo.nimbleway.messages;
 
 import java.util.concurrent.ThreadLocalRandom;
-import java.util.function.Consumer;
 
-import br.com.aexo.nimbleway.WampInvocation;
-import br.com.aexo.nimbleway.WampInvocationResult;
+import org.jdeferred.Deferred;
+import org.jdeferred.Promise;
+import org.jdeferred.impl.DeferredObject;
+
+import br.com.aexo.nimbleway.Subscription;
+import br.com.aexo.nimbleway.WampError;
 
 /**
  * represent wamp subscribe message solicitation
@@ -12,28 +15,36 @@ import br.com.aexo.nimbleway.WampInvocationResult;
  * @author carlosr
  *
  */
-public class SubscribeMessage implements WampMessage {
+public class SubscribeMessage extends DeferredWampMessage<Subscription, WampError> {
 
-	private String topic;
-	private Consumer<WampInvocation> fn;
 	private Long id;
+	private Subscription subscription;
 
-	public SubscribeMessage(String topic, Consumer<WampInvocation> fn) {
+	private Deferred<Subscription, WampError, Object> def;
+	private Promise<Subscription, WampError, Object> promise;
+
+	public SubscribeMessage(Subscription subscription) {
 		this.id = ThreadLocalRandom.current().nextLong(10000000, 99999999);
-		this.topic = topic;
-		this.fn = fn;
-	}
-
-	public String getTopic() {
-		return topic;
-	}
-
-	public Consumer<WampInvocation> getFn() {
-		return fn;
+		this.subscription = subscription;
+		this.def = new DeferredObject<Subscription, WampError, Object>();
+		this.promise = def.promise();
 	}
 
 	public Long getId() {
 		return id;
+	}
+
+	public Subscription getSubscription() {
+		return subscription;
+	}
+
+	public Promise<Subscription, WampError, Object> getPromise() {
+		return promise;
+	}
+
+	@Override
+	protected Deferred<Subscription, WampError, Object> getDefered() {
+		return def;
 	}
 
 }

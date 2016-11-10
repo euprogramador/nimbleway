@@ -24,11 +24,16 @@ public class SubscribeMessageJsonEncoder implements JsonEncoderMessage<Subscribe
 		ArrayNode node = mapper.createArrayNode();
 		node.add(32);
 
-		node.add(msg.getId()); // um numero randomico de 8 digitos
+		node.add(msg.getId()); 
 
 		ObjectNode options = mapper.createObjectNode();
+
+		msg.getSubscription().getOptions().forEach((k,v)-> {
+			options.set(k,mapper.valueToTree(v));
+		});
+		
 		node.add(options);
-		node.add(msg.getTopic());
+		node.add(msg.getSubscription().getTopic());
 
 		StringWriter writer = new StringWriter();
 		try {

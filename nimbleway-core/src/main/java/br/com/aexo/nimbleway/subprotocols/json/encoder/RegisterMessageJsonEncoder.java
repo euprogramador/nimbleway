@@ -24,11 +24,15 @@ public class RegisterMessageJsonEncoder  implements JsonEncoderMessage<RegisterM
 		ArrayNode node = mapper.createArrayNode();
 		node.add(64);
 		
-		node.add(msg.getId()); // um numero randomico de 8 digitos
-		
+		node.add(msg.getId()); 
 		ObjectNode options = mapper.createObjectNode();
+
+		msg.getRegistration().getOptions().forEach((k,v)-> {
+			options.set(k,mapper.valueToTree(v));
+		});
+		
 		node.add(options);
-		node.add(msg.getName());
+		node.add(msg.getRegistration().getName());
 		
 		StringWriter writer = new StringWriter();
 		try {

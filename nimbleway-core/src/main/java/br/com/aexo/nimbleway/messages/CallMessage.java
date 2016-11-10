@@ -6,49 +6,39 @@ import org.jdeferred.Deferred;
 import org.jdeferred.Promise;
 import org.jdeferred.impl.DeferredObject;
 
-import br.com.aexo.nimbleway.WampResult;
+import br.com.aexo.nimbleway.Invocation;
+import br.com.aexo.nimbleway.ResultCall;
+import br.com.aexo.nimbleway.WampError;
 
-/**
- * 
- * represent wamp call message
- * 
- * @author carlosr
- *
- */
-public class CallMessage implements WampMessage {
+public class CallMessage extends DeferredWampMessage<ResultCall, WampError> {
 
-	private Object[] params;
-	private String fnName;
 	private Long id;
-	private Deferred<WampResult, Exception, Object> def;
-	private Promise<WampResult, Exception, Object> promise;
+	private Deferred<ResultCall, WampError, Object> def;
+	private Promise<ResultCall, WampError, Object> promise;
+	private Invocation invocation;
 
-	public CallMessage(String fnName, Object[] params) {
+	public CallMessage(Invocation invocation) {
+		this.invocation = invocation;
 		this.id = ThreadLocalRandom.current().nextLong(10000000, 99999999);
-		this.fnName = fnName;
-		this.params = params;
-		this.def = new DeferredObject<WampResult, Exception, Object>();
+		this.def = new DeferredObject<ResultCall, WampError, Object>();
 		this.promise = def.promise();
-	}
-
-	public Object[] getParams() {
-		return params;
-	}
-
-	public String getFnName() {
-		return fnName;
 	}
 
 	public Long getId() {
 		return id;
 	}
 
-	public Deferred<WampResult, Exception, Object> getDefered() {
-		return def;
+	public Invocation getInvocation() {
+		return invocation;
 	}
 
-	public Promise<WampResult, Exception, Object> getPromise() {
+	public Promise<ResultCall, WampError, Object> getPromise() {
 		return promise;
+	}
+
+	@Override
+	protected Deferred<ResultCall, WampError, Object> getDefered() {
+		return def;
 	}
 
 }

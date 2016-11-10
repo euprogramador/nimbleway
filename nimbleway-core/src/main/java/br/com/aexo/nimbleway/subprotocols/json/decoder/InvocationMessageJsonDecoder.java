@@ -1,10 +1,14 @@
 package br.com.aexo.nimbleway.subprotocols.json.decoder;
 
+import java.util.Map;
+
 import org.springframework.stereotype.Component;
 
 import br.com.aexo.nimbleway.messages.InvocationMessage;
 import br.com.aexo.nimbleway.subprotocols.json.JsonDecoderMessage;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 
 @Component
@@ -13,11 +17,17 @@ public class InvocationMessageJsonDecoder implements
 
 	@Override
 	public InvocationMessage decode(Object o) {
+		ObjectMapper mapper = new ObjectMapper();
+		
+		
 		ArrayNode raw = (ArrayNode) o;
-		Long idRequest = raw.get(1).asLong();
-		Long idFunctionRegistration = raw.get(2).asLong();
+		Long requestId = raw.get(1).asLong();
+		Long functionId = raw.get(2).asLong();
+		@SuppressWarnings("unchecked")
+		Map<String, Object> details = mapper.convertValue(raw.get(3), Map.class);
 		ArrayNode params = (ArrayNode) raw.get(4);
-		return new InvocationMessage(idRequest, idFunctionRegistration, params);
+		JsonNode payload = raw.get(5);
+		return new InvocationMessage(requestId,functionId,params,details,payload);
 	}
 
 	@Override

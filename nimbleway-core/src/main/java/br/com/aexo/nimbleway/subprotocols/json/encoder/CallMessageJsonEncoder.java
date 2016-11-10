@@ -11,7 +11,7 @@ import br.com.aexo.nimbleway.subprotocols.json.JsonEncoderMessage;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.util.RawValue;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 @Component
 public class CallMessageJsonEncoder implements JsonEncoderMessage<CallMessage> {
@@ -25,12 +25,17 @@ public class CallMessageJsonEncoder implements JsonEncoderMessage<CallMessage> {
 			node.add(48);
 			node.add(msg.getId());
 
-			node.add(mapper.createObjectNode()); // options
-			node.add(msg.getFnName());
+			ObjectNode options = mapper.createObjectNode();
 
-			// serializa os parametros como uma array e envia
-			node.addRawValue(new RawValue(mapper.writeValueAsString(msg
-					.getParams())));
+			msg.getInvocation().getOptions().forEach((k,v)-> {
+				options.set(k,mapper.valueToTree(v));
+			});
+			
+			node.add(options);
+			node.add(msg.getInvocation().getFunction());
+
+			node.add(mapper.valueToTree(msg.getInvocation().getArguments()));
+			node.add(mapper.valueToTree(msg.getInvocation().getPayload()));
 
 			StringWriter writer = new StringWriter();
 

@@ -1,6 +1,9 @@
 package br.com.aexo.nimbleway.messages;
 
+import java.util.Map;
+
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 
 /**
  * represent wamp result message
@@ -10,20 +13,33 @@ import com.fasterxml.jackson.databind.JsonNode;
  */
 public class ResultMessage implements WampMessage {
 
-	private final JsonNode result;
-	private final Long idCall;
+	private final Long callId;
+	private final Map<String, Object> details;
+	private final ArrayNode params;
+	private final JsonNode payload;
 
-	public ResultMessage(Long idCall, JsonNode result) {
-		this.idCall = idCall;
-		this.result = result;
+	public ResultMessage(Long callId, Map<String, Object> details, ArrayNode params, JsonNode payload) {
+		super();
+		this.callId = callId;
+		this.details = details;
+		this.params = params;
+		this.payload = payload;
 	}
 
-	public JsonNode getResult() {
-		return result;
+	public Long getCallId() {
+		return callId;
 	}
 
-	public Long getIdCall() {
-		return idCall;
+	public Map<String, Object> getDetails() {
+		return details;
+	}
+
+	public ArrayNode getParams() {
+		return params;
+	}
+
+	public JsonNode getPayload() {
+		return payload;
 	}
 
 }

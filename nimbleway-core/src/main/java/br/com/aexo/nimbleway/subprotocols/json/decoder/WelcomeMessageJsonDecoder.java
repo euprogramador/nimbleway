@@ -5,6 +5,8 @@ import org.springframework.stereotype.Component;
 import br.com.aexo.nimbleway.messages.WelcomeMessage;
 import br.com.aexo.nimbleway.subprotocols.json.JsonDecoderMessage;
 
+import com.fasterxml.jackson.databind.node.ArrayNode;
+
 @Component
 public class WelcomeMessageJsonDecoder implements JsonDecoderMessage<WelcomeMessage> {
 
@@ -15,8 +17,9 @@ public class WelcomeMessageJsonDecoder implements JsonDecoderMessage<WelcomeMess
 
 	@Override
 	public WelcomeMessage decode(Object o) {
-		// TODO melhorar tratamento
-		return new WelcomeMessage();
+		ArrayNode raw = (ArrayNode) o;
+		Long sessionId = raw.get(1).asLong();
+		return new WelcomeMessage(sessionId);
 	}
 
 }

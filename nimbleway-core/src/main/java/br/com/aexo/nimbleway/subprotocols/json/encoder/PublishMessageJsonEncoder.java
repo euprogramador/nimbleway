@@ -5,14 +5,13 @@ import java.io.StringWriter;
 
 import org.springframework.stereotype.Component;
 
-import br.com.aexo.nimbleway.messages.CallMessage;
 import br.com.aexo.nimbleway.messages.PublishMessage;
 import br.com.aexo.nimbleway.messages.WampMessage;
 import br.com.aexo.nimbleway.subprotocols.json.JsonEncoderMessage;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.util.RawValue;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 @Component
 public class PublishMessageJsonEncoder implements JsonEncoderMessage<PublishMessage> {
@@ -26,12 +25,17 @@ public class PublishMessageJsonEncoder implements JsonEncoderMessage<PublishMess
 			node.add(16);
 			node.add(msg.getId());
 
-			node.add(mapper.createObjectNode()); // options
-			node.add(msg.getTopic());
+			ObjectNode options = mapper.createObjectNode();
 
-//			// serializa os parametros como uma array e envia
-//			node.addRawValue(new RawValue(mapper.writeValueAsString(msg
-//					.getParams())));
+			msg.getPublication().getOptions().forEach((k,v)-> {
+				options.set(k,mapper.valueToTree(v));
+			});
+			
+			node.add(options);
+			node.add(msg.getPublication().getTopic());
+			
+			node.add(mapper.valueToTree(msg.getPublication().getArguments()));
+			node.add(mapper.valueToTree(msg.getPublication().getPayload()));
 
 			StringWriter writer = new StringWriter();
 

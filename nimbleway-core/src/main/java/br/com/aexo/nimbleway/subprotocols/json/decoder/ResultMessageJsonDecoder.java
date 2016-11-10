@@ -1,10 +1,14 @@
 package br.com.aexo.nimbleway.subprotocols.json.decoder;
 
+import java.util.Map;
+
 import org.springframework.stereotype.Component;
 
 import br.com.aexo.nimbleway.messages.ResultMessage;
 import br.com.aexo.nimbleway.subprotocols.json.JsonDecoderMessage;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 
 @Component
@@ -12,11 +16,16 @@ public class ResultMessageJsonDecoder implements JsonDecoderMessage<ResultMessag
 
 	@Override
 	public ResultMessage decode(Object o) {
-		ArrayNode raw = (ArrayNode) o;
-		Long idCall = raw.get(1).asLong();
-		ArrayNode result = (ArrayNode) raw.get(3);
+		ObjectMapper mapper = new ObjectMapper();
 
-		return new ResultMessage(idCall, result.get(0));
+		ArrayNode raw = (ArrayNode) o;
+		Long callId = raw.get(1).asLong();
+		@SuppressWarnings("unchecked")
+		Map<String, Object> details = mapper.convertValue(raw.get(2), Map.class);
+		ArrayNode params = (ArrayNode) raw.get(3);
+		JsonNode payload = raw.get(4);
+
+		return new ResultMessage(callId, details, params, payload);
 	}
 
 	@Override

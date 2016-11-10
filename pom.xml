@@ -34,6 +34,13 @@
 			<version>4.3.3.RELEASE</version>
 		</dependency>
 
+		<!-- https://mvnrepository.com/artifact/com.google.guava/guava -->
+		<dependency>
+			<groupId>com.google.guava</groupId>
+			<artifactId>guava</artifactId>
+			<version>20.0</version>
+		</dependency>
+
 
 		<dependency>
 			<groupId>com.fasterxml.jackson.core</groupId>
@@ -107,5 +114,6 @@
 		<module>nimbleway-core</module>
 		<module>nimbleway-websocket-undertow-connection</module>
 		<module>nimbleway-integration-test</module>
+		<module>nimbleway-client</module>
 	</modules>
 </project>
