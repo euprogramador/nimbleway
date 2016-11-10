@@ -4,12 +4,12 @@ import java.util.List;
 
 import org.jdeferred.Promise;
 
-import br.com.aexo.nimbleway.Invocation;
-import br.com.aexo.nimbleway.Publication;
-import br.com.aexo.nimbleway.Registration;
-import br.com.aexo.nimbleway.ResultCall;
-import br.com.aexo.nimbleway.Subscription;
-import br.com.aexo.nimbleway.WampError;
+import br.com.aexo.nimbleway.core.Invocation;
+import br.com.aexo.nimbleway.core.Publication;
+import br.com.aexo.nimbleway.core.Registration;
+import br.com.aexo.nimbleway.core.ResultCall;
+import br.com.aexo.nimbleway.core.Subscription;
+import br.com.aexo.nimbleway.core.WampError;
 
 public interface ClientSession {
 
@@ -32,5 +32,5 @@ public interface ClientSession {
 	public List<Registration> getRegistrations();
 
 	public Promise<ResultCall, WampError, Object> call(Invocation invocation);
-	
+
 }

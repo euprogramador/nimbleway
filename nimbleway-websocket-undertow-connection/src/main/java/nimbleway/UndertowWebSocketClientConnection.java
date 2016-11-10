@@ -24,10 +24,10 @@ import org.slf4j.LoggerFactory;
 import org.xnio.ChannelListener;
 import org.xnio.XnioWorker;
 
-import br.com.aexo.nimbleway.WampConnection;
-import br.com.aexo.nimbleway.WampTransport;
-import br.com.aexo.nimbleway.messages.WampMessage;
-import br.com.aexo.nimbleway.subprotocols.SubProtocol;
+import br.com.aexo.nimbleway.core.WampConnection;
+import br.com.aexo.nimbleway.core.WampTransport;
+import br.com.aexo.nimbleway.core.messages.WampMessage;
+import br.com.aexo.nimbleway.core.subprotocols.SubProtocol;
 
 public class UndertowWebSocketClientConnection implements WampConnection {
 

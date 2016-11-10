@@ -9,14 +9,14 @@ import org.xnio.Options;
 import org.xnio.Xnio;
 import org.xnio.XnioWorker;
 
-import br.com.aexo.nimbleway.Invocation;
-import br.com.aexo.nimbleway.Publication;
-import br.com.aexo.nimbleway.Registration;
-import br.com.aexo.nimbleway.Result;
-import br.com.aexo.nimbleway.ResultError;
-import br.com.aexo.nimbleway.Subscription;
-import br.com.aexo.nimbleway.WampConnection;
 import br.com.aexo.nimbleway.client.WampClient;
+import br.com.aexo.nimbleway.core.Invocation;
+import br.com.aexo.nimbleway.core.Publication;
+import br.com.aexo.nimbleway.core.Registration;
+import br.com.aexo.nimbleway.core.Result;
+import br.com.aexo.nimbleway.core.ResultError;
+import br.com.aexo.nimbleway.core.Subscription;
+import br.com.aexo.nimbleway.core.WampConnection;
 
 public class Main {
 
@@ -39,6 +39,7 @@ public class Main {
 
 		WampConnection conn = new UndertowWebSocketClientConnection(worker, bufferPool, new URI("ws://localhost:8080/ws"));
 
+		
 		WampClient client = new WampClient(conn);
 
 		client.onException((e) -> {

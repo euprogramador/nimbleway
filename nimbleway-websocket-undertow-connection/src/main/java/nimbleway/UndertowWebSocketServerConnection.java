@@ -22,10 +22,10 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.function.Consumer;
 
-import br.com.aexo.nimbleway.WampConnection;
-import br.com.aexo.nimbleway.WampTransport;
-import br.com.aexo.nimbleway.messages.WampMessage;
-import br.com.aexo.nimbleway.subprotocols.SubProtocol;
+import br.com.aexo.nimbleway.core.WampConnection;
+import br.com.aexo.nimbleway.core.WampTransport;
+import br.com.aexo.nimbleway.core.messages.WampMessage;
+import br.com.aexo.nimbleway.core.subprotocols.SubProtocol;
 
 public class UndertowWebSocketServerConnection implements WampConnection {
 

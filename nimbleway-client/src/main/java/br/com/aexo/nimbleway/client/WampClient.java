@@ -12,10 +12,10 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.context.support.GenericApplicationContext;
 
-import br.com.aexo.nimbleway.WampConnection;
-import br.com.aexo.nimbleway.WampTransport;
-import br.com.aexo.nimbleway.messages.WampMessage;
-import br.com.aexo.nimbleway.subprotocols.SubProtocol;
+import br.com.aexo.nimbleway.core.WampConnection;
+import br.com.aexo.nimbleway.core.WampTransport;
+import br.com.aexo.nimbleway.core.messages.WampMessage;
+import br.com.aexo.nimbleway.core.subprotocols.SubProtocol;
 
 /**
  * class responsible for client functionality
@@ -29,7 +29,7 @@ public class WampClient {
 
 	private WampConnection connection;
 
-	private Consumer<DefaultClientSession> onOpenCallback = (session) -> {
+	private Consumer<ClientSession> onOpenCallback = (session) -> {
 	};
 
 	private Consumer<Exception> exceptionHandler = (Exception) -> {
@@ -49,7 +49,7 @@ public class WampClient {
 	 * 
 	 * @param onOpenCallback
 	 */
-	public void onOpen(Consumer<DefaultClientSession> onOpenCallback) {
+	public void onOpen(Consumer<ClientSession> onOpenCallback) {
 		this.onOpenCallback = onOpenCallback;
 	}
 

@@ -6,11 +6,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
-import br.com.aexo.nimbleway.WampException;
-import br.com.aexo.nimbleway.WampTransport;
-import br.com.aexo.nimbleway.messages.AbortMessage;
-import br.com.aexo.nimbleway.messages.HelloMessage;
-import br.com.aexo.nimbleway.messages.WelcomeMessage;
+import br.com.aexo.nimbleway.client.core.SessionPreparator;
+import br.com.aexo.nimbleway.core.WampException;
+import br.com.aexo.nimbleway.core.WampTransport;
+import br.com.aexo.nimbleway.core.messages.AbortMessage;
+import br.com.aexo.nimbleway.core.messages.HelloMessage;
+import br.com.aexo.nimbleway.core.messages.WelcomeMessage;
 
 /**
  * component used for handshake process handle to router
@@ -19,19 +20,22 @@ import br.com.aexo.nimbleway.messages.WelcomeMessage;
  *
  */
 @Component
-public class WampClientHandshake {
+class WampClientHandshake {
 	
 	private static Logger log = LoggerFactory.getLogger(WampClientHandshake.class);
 
 	private WampTransport transport;
-	private Consumer<DefaultClientSession> onHandshakeCallback;
-	private DefaultClientSession session;
+	private Consumer<ClientSession> onHandshakeCallback;
+	private ClientSession session;
 
 	private Consumer<Exception> exceptionHandler;
 
-	public WampClientHandshake(WampTransport transport, DefaultClientSession session) {
+	private SessionPreparator preparator;
+
+	public WampClientHandshake(WampTransport transport, ClientSession session,SessionPreparator preparator) {
 		this.transport = transport;
 		this.session = session;
+		this.preparator = preparator;
 	}
 
 	/**
@@ -51,10 +55,8 @@ public class WampClientHandshake {
 					log.debug("handshake success");
 					// success of handshake
 					
-					session.setId(welcome.getSessionId());
-					session.setRealm(realm);
+					preparator.prepareSession(welcome.getSessionId(), realm,exceptionHandler);
 					
-					session.configureHandlersInTransport();
 					onHandshakeCallback.accept(session);
 				}
 				
@@ -73,7 +75,7 @@ public class WampClientHandshake {
 	 * 
 	 * @param onHandshakeCallback
 	 */
-	public void onHandshake(Consumer<DefaultClientSession> onHandshakeCallback) {
+	public void onHandshake(Consumer<ClientSession> onHandshakeCallback) {
 		log.trace("configured on handshake handler");
 		this.onHandshakeCallback = onHandshakeCallback;
 	}
