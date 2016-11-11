@@ -69,34 +69,19 @@ class DefaultClientSession implements ClientSession {
 
 	private SpinLock spinLock = new SpinLock();
 
-	public Map<BrokerCommunicationKey, WaitReply<? extends WampMessage, ? extends Object>> requests = new HashMap<BrokerCommunicationKey, WaitReply<? extends WampMessage, ? extends Object>>();
+	public Map<BrokerCommunicationKey, WaitReply<? extends WampMessage, ? extends Object>> waitReplies = new HashMap<BrokerCommunicationKey, WaitReply<? extends WampMessage, ? extends Object>>();
 
-	public void waitReply(BrokerCommunicationKey key, WaitReply<? extends WampMessage, ? extends Object> wr) {
-		try {
-			spinLock.lock();
-		} catch (InterruptedException e) {
-			throw new RuntimeException(e);
-		}
-
-		requests.put(key, wr);
-
+	private void waitReply(BrokerCommunicationKey key, WaitReply<? extends WampMessage, ? extends Object> wr) {
+		spinLock.lock();
+		waitReplies.put(key, wr);
 		spinLock.unlock();
 	}
 
-	@SuppressWarnings("unchecked")
-	public <T> T retrieve(BrokerCommunicationKey id) {
-
-		try {
-			spinLock.lock();
-		} catch (InterruptedException e) {
-			throw new RuntimeException(e);
-		}
-
-		WaitReply<? extends WampMessage, ? extends Object> o = requests.get(id);
-		requests.remove(id);
-
+	private <T> T retrieve(BrokerCommunicationKey id) {
+		spinLock.lock();
+		WaitReply<? extends WampMessage, ? extends Object> o = waitReplies.get(id);
+		waitReplies.remove(id);
 		spinLock.unlock();
-
 		return (T) o;
 	}
 
@@ -160,8 +145,10 @@ class DefaultClientSession implements ClientSession {
 	}
 
 	public void close() {
-		isOpen = false;
-		transport.write(new GoodByeMessage());
+		if (isOpen) {
+			isOpen = false;
+			transport.write(new GoodByeMessage());
+		}
 	}
 
 	public List<Subscription> getSubscriptions() {
