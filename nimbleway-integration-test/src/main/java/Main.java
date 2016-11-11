@@ -1,6 +1,8 @@
 import io.undertow.server.DefaultByteBufferPool;
 
 import java.net.URI;
+import java.util.Iterator;
+import java.util.ServiceLoader;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -17,10 +19,13 @@ import br.com.aexo.nimbleway.core.Registration;
 import br.com.aexo.nimbleway.core.Result;
 import br.com.aexo.nimbleway.core.Subscription;
 import br.com.aexo.nimbleway.core.WampConnection;
+import br.com.aexo.nimbleway.core.subprotocols.SubProtocol;
 
 public class Main {
 
 	public static void main(String[] args) throws Exception {
+		
+		
 		System.setProperty(org.slf4j.impl.SimpleLogger.DEFAULT_LOG_LEVEL_KEY, "trace");
 
 		Xnio xnio = Xnio.getInstance("nio", Main.class.getClassLoader());
@@ -50,6 +55,7 @@ public class Main {
 
 		client.onOpen((session) -> {
 
+			
 			System.out.println(session.getId());
 
 			System.out.println(session.getRealm());

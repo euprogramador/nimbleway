@@ -1,6 +1,6 @@
 package br.com.aexo.nimbleway.core;
 
-import java.util.Collection;
+import java.util.Iterator;
 import java.util.function.Consumer;
 
 import br.com.aexo.nimbleway.core.subprotocols.SubProtocol;
@@ -18,7 +18,7 @@ public interface WampConnection {
 	 * 
 	 * @param supportedSubProtocols
 	 */
-	void open(Collection<SubProtocol> supportedSubProtocols);
+	void open(Iterator<SubProtocol> supportedSubProtocols);
 
 	/**
 	 * close this connection

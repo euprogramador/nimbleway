@@ -1,14 +1,10 @@
-package br.com.aexo.nimbleway.core.subprotocols.json.decoder;
+package br.com.aexo.nimbleway.core.subprotocols.json;
 
-
-import org.springframework.stereotype.Component;
-
-import br.com.aexo.nimbleway.core.messages.UnregisteredMessage;
-import br.com.aexo.nimbleway.core.subprotocols.json.JsonDecoderMessage;
 
 import com.fasterxml.jackson.databind.node.ArrayNode;
 
-@Component
+import br.com.aexo.nimbleway.core.messages.UnregisteredMessage;
+
 class UnregisteredMessageJsonDecoder implements JsonDecoderMessage<UnregisteredMessage> {
 
 	@Override

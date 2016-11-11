@@ -1,17 +1,13 @@
-package br.com.aexo.nimbleway.core.subprotocols.json.decoder;
+package br.com.aexo.nimbleway.core.subprotocols.json;
 
 import java.util.Map;
-
-import org.springframework.stereotype.Component;
-
-import br.com.aexo.nimbleway.core.messages.InvocationMessage;
-import br.com.aexo.nimbleway.core.subprotocols.json.JsonDecoderMessage;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 
-@Component
+import br.com.aexo.nimbleway.core.messages.InvocationMessage;
+
 class InvocationMessageJsonDecoder implements
 		JsonDecoderMessage<InvocationMessage> {
 

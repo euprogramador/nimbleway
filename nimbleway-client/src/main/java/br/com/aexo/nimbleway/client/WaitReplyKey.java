@@ -1,13 +1,13 @@
-package br.com.aexo.nimbleway.client.core;
+package br.com.aexo.nimbleway.client;
 
 import br.com.aexo.nimbleway.core.MessageType;
 
-class BrokerCommunicationKey {
+class WaitReplyKey {
 
 	private MessageType type;
 	private Long requestId;
 
-	public BrokerCommunicationKey(MessageType type, Long requestId) {
+	public WaitReplyKey(MessageType type, Long requestId) {
 		super();
 		this.type = type;
 		this.requestId = requestId;
@@ -30,7 +30,7 @@ class BrokerCommunicationKey {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		BrokerCommunicationKey other = (BrokerCommunicationKey) obj;
+		WaitReplyKey other = (WaitReplyKey) obj;
 		if (requestId == null) {
 			if (other.requestId != null)
 				return false;

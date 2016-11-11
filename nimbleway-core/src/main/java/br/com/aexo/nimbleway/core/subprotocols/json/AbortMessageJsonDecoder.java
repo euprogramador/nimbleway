@@ -1,11 +1,8 @@
-package br.com.aexo.nimbleway.core.subprotocols.json.decoder;
-
-import org.springframework.stereotype.Component;
-
-import br.com.aexo.nimbleway.core.messages.AbortMessage;
-import br.com.aexo.nimbleway.core.subprotocols.json.JsonDecoderMessage;
+package br.com.aexo.nimbleway.core.subprotocols.json;
 
 import com.fasterxml.jackson.databind.node.ArrayNode;
+
+import br.com.aexo.nimbleway.core.messages.AbortMessage;
 
 /**
  * Decoder of abort message
@@ -13,7 +10,6 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
  * @author carlosr
  *
  */
-@Component
 class AbortMessageJsonDecoder implements JsonDecoderMessage<AbortMessage> {
 
 	@Override

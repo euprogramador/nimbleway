@@ -1,14 +1,10 @@
-package br.com.aexo.nimbleway.core.subprotocols.json.decoder;
-
-import org.springframework.stereotype.Component;
-
-import br.com.aexo.nimbleway.core.messages.WelcomeMessage;
-import br.com.aexo.nimbleway.core.subprotocols.json.JsonDecoderMessage;
+package br.com.aexo.nimbleway.core.subprotocols.json;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 
-@Component
+import br.com.aexo.nimbleway.core.messages.WelcomeMessage;
+
 class WelcomeMessageJsonDecoder implements JsonDecoderMessage<WelcomeMessage> {
 
 	@Override

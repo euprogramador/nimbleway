@@ -1,4 +1,4 @@
-package br.com.aexo.nimbleway.client.core;
+package br.com.aexo.nimbleway.client;
 
 import org.jdeferred.Promise;
 import org.jdeferred.impl.DeferredObject;

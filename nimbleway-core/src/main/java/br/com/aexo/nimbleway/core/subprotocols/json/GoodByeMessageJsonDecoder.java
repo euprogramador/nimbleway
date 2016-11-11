@@ -1,9 +1,6 @@
-package br.com.aexo.nimbleway.core.subprotocols.json.decoder;
-
-import org.springframework.stereotype.Component;
+package br.com.aexo.nimbleway.core.subprotocols.json;
 
 import br.com.aexo.nimbleway.core.messages.GoodByeMessage;
-import br.com.aexo.nimbleway.core.subprotocols.json.JsonDecoderMessage;
 
 /**
  * Decoder of abort message
@@ -11,7 +8,6 @@ import br.com.aexo.nimbleway.core.subprotocols.json.JsonDecoderMessage;
  * @author carlosr
  *
  */
-@Component
 class GoodByeMessageJsonDecoder implements JsonDecoderMessage<GoodByeMessage> {
 
 	@Override

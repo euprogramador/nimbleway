@@ -1,20 +1,12 @@
 package br.com.aexo.nimbleway.client;
 
-import java.util.Collection;
+import java.util.ServiceLoader;
 import java.util.function.Consumer;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
-import org.springframework.context.support.GenericApplicationContext;
 
 import br.com.aexo.nimbleway.core.WampConnection;
-import br.com.aexo.nimbleway.core.WampTransport;
-import br.com.aexo.nimbleway.core.messages.WampMessage;
 import br.com.aexo.nimbleway.core.subprotocols.SubProtocol;
 
 /**
@@ -35,7 +27,6 @@ public class WampClient {
 	private Consumer<Exception> exceptionHandler = (Exception) -> {
 	};
 
-
 	/**
 	 * create a wamp client instance using a WampConnection
 	 * 
@@ -44,7 +35,6 @@ public class WampClient {
 	public WampClient(WampConnection connection) {
 		this.connection = connection;
 	}
-
 
 	/**
 	 * callback called of wamp handshake complete successiful on router
@@ -60,43 +50,18 @@ public class WampClient {
 	 * 
 	 * @param realm
 	 */
-	// ((ConfigurableApplicationContext)appCtx).close();
-	@SuppressWarnings("resource")
 	public void open(String realm) {
 		log.debug("open connection to router");
 
-		// context for subprotocol
-		ApplicationContext subProtocolContext = new AnnotationConfigApplicationContext(SubProtocol.class.getPackage().getName(), WampMessage.class.getPackage().getName());
-		Collection<SubProtocol> supportedSubProtocols = subProtocolContext.getBeansOfType(SubProtocol.class).values();
-		log.trace("subprotocol context created " + subProtocolContext);
+		ServiceLoader<SubProtocol> subProtocols = ServiceLoader.load(SubProtocol.class);
 		connection.onException(exceptionHandler);
 
 		connection.onOpen((transport) -> {
-			// register custom beans for context for connection
-				GenericApplicationContext runtimeBeans = new GenericApplicationContext();
-				ConfigurableListableBeanFactory beanFactory = ((ConfigurableApplicationContext) runtimeBeans).getBeanFactory();
-				beanFactory.registerSingleton(WampTransport.class.getCanonicalName(), transport);
-				runtimeBeans.refresh();
-				
-				log.trace("runtime beans context created");
-				
+			ClientSession session = new ClientSession(transport, onOpenCallback, exceptionHandler);
+			session.open(realm);
+		});
 
-				ApplicationContext context = new ClassPathXmlApplicationContext(new String[] { this.getClass().getPackage().getName().replaceAll("\\.", "/") + "/beans.xml" }, runtimeBeans);
-				WampClientHandshake clientHandshake = context.getBean(WampClientHandshake.class);
-
-				log.trace("application context created");
-				
-				clientHandshake.onHandshake((session) -> {
-					onOpenCallback.accept(session);
-				});
-				
-				clientHandshake.onException(exceptionHandler);
-				
-				clientHandshake.handshake(realm);
-			});
-
-		
-		connection.open(supportedSubProtocols);
+		connection.open(subProtocols.iterator());
 	}
 
 	public void onException(Consumer<Exception> exceptionHandler) {

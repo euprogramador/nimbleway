@@ -1,5 +1,22 @@
 package br.com.aexo.nimbleway.connection;
 
+import java.io.IOException;
+import java.net.URI;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.function.Consumer;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.xnio.XnioWorker;
+
+import br.com.aexo.nimbleway.core.WampConnection;
+import br.com.aexo.nimbleway.core.WampTransport;
+import br.com.aexo.nimbleway.core.messages.WampMessage;
+import br.com.aexo.nimbleway.core.subprotocols.SubProtocol;
 import io.undertow.server.DefaultByteBufferPool;
 import io.undertow.websockets.client.WebSocketClient;
 import io.undertow.websockets.client.WebSocketClientNegotiation;
@@ -9,26 +26,6 @@ import io.undertow.websockets.core.BufferedTextMessage;
 import io.undertow.websockets.core.StreamSourceFrameChannel;
 import io.undertow.websockets.core.WebSocketChannel;
 import io.undertow.websockets.core.WebSockets;
-
-import java.io.IOException;
-import java.net.URI;
-import java.nio.channels.Channel;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.ExecutorService;
-import java.util.function.Consumer;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.xnio.ChannelListener;
-import org.xnio.XnioWorker;
-
-import br.com.aexo.nimbleway.core.WampConnection;
-import br.com.aexo.nimbleway.core.WampTransport;
-import br.com.aexo.nimbleway.core.messages.WampMessage;
-import br.com.aexo.nimbleway.core.subprotocols.SubProtocol;
 
 public class UndertowWebSocketClientConnection implements WampConnection {
 
@@ -67,11 +64,11 @@ public class UndertowWebSocketClientConnection implements WampConnection {
 	}
 
 	@Override
-	public void open(Collection<SubProtocol> supportedSubProtocols) {
+	public void open(Iterator<SubProtocol> supportedSubProtocols) {
 		try {
 			log.debug("open connection");
 			Map<String, SubProtocol> subProtocols = new HashMap<>();
-			supportedSubProtocols.forEach((subProtocol) -> {
+			supportedSubProtocols.forEachRemaining((subProtocol) -> {
 				subProtocols.put(subProtocol.getName(), subProtocol);
 			});
 

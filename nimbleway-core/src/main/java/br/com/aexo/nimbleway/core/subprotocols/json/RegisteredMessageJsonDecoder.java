@@ -1,14 +1,10 @@
-package br.com.aexo.nimbleway.core.subprotocols.json.decoder;
+package br.com.aexo.nimbleway.core.subprotocols.json;
 
-
-import org.springframework.stereotype.Component;
-
-import br.com.aexo.nimbleway.core.messages.RegisteredMessage;
-import br.com.aexo.nimbleway.core.subprotocols.json.JsonDecoderMessage;
 
 import com.fasterxml.jackson.databind.node.ArrayNode;
 
-@Component
+import br.com.aexo.nimbleway.core.messages.RegisteredMessage;
+
 class RegisteredMessageJsonDecoder implements JsonDecoderMessage<RegisteredMessage> {
 
 	@Override

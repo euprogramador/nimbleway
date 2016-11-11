@@ -1,19 +1,15 @@
-package br.com.aexo.nimbleway.core.subprotocols.json.encoder;
+package br.com.aexo.nimbleway.core.subprotocols.json;
 
 import java.io.IOException;
 import java.io.StringWriter;
-
-import org.springframework.stereotype.Component;
-
-import br.com.aexo.nimbleway.core.messages.HelloMessage;
-import br.com.aexo.nimbleway.core.messages.WampMessage;
-import br.com.aexo.nimbleway.core.subprotocols.json.JsonEncoderMessage;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
-@Component
+import br.com.aexo.nimbleway.core.messages.HelloMessage;
+import br.com.aexo.nimbleway.core.messages.WampMessage;
+
 class HelloMessageJsonEncoder implements JsonEncoderMessage<HelloMessage> {
 
 	@Override
