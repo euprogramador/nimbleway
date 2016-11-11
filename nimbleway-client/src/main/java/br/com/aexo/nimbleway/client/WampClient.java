@@ -35,6 +35,7 @@ public class WampClient {
 	private Consumer<Exception> exceptionHandler = (Exception) -> {
 	};
 
+
 	/**
 	 * create a wamp client instance using a WampConnection
 	 * 
@@ -43,6 +44,7 @@ public class WampClient {
 	public WampClient(WampConnection connection) {
 		this.connection = connection;
 	}
+
 
 	/**
 	 * callback called of wamp handshake complete successiful on router

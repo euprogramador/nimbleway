@@ -14,10 +14,5 @@
 			<artifactId>nimbleway-core</artifactId>
 			<version>${project.version}</version>
 		</dependency>
-		<dependency>
-			<groupId>br.com.aexo</groupId>
-			<artifactId>nimbleway-websocket-undertow-connection</artifactId>
-			<version>${project.version}</version>
-		</dependency>
 	</dependencies>
 </project>

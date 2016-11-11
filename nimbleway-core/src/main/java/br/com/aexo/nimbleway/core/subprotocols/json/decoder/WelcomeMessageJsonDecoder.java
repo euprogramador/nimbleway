@@ -5,6 +5,7 @@ import org.springframework.stereotype.Component;
 import br.com.aexo.nimbleway.core.messages.WelcomeMessage;
 import br.com.aexo.nimbleway.core.subprotocols.json.JsonDecoderMessage;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 
 @Component
@@ -19,7 +20,10 @@ class WelcomeMessageJsonDecoder implements JsonDecoderMessage<WelcomeMessage> {
 	public WelcomeMessage decode(Object o) {
 		ArrayNode raw = (ArrayNode) o;
 		Long sessionId = raw.get(1).asLong();
-		return new WelcomeMessage(sessionId);
+		JsonNode jsonNode = raw.get(2).get("agent");
+		String agent = jsonNode != null ? jsonNode.asText() : null;
+
+		return new WelcomeMessage(sessionId, agent);
 	}
 
 }

@@ -115,5 +115,6 @@
 		<module>nimbleway-websocket-undertow-connection</module>
 		<module>nimbleway-integration-test</module>
 		<module>nimbleway-client</module>
+		<module>nimbleway-router</module>
 	</modules>
 </project>

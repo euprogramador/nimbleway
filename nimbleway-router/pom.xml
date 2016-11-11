@@ -6,25 +6,13 @@
 		<artifactId>nimbleway</artifactId>
 		<version>0.0.1-SNAPSHOT</version>
 	</parent>
-	<artifactId>nimbleway-integration-test</artifactId>
+	<artifactId>nimbleway-router</artifactId>
+
 	<dependencies>
 		<dependency>
-			<groupId>${project.groupId}</groupId>
-			<artifactId>nimbleway-client</artifactId>
+			<groupId>br.com.aexo</groupId>
+			<artifactId>nimbleway-core</artifactId>
 			<version>${project.version}</version>
 		</dependency>
-		<dependency>
-			<groupId>${project.groupId}</groupId>
-			<artifactId>nimbleway-router</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>${project.groupId}</groupId>
-			<artifactId>nimbleway-websocket-undertow-connection</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-
 	</dependencies>
-
-
 </project>

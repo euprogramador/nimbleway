@@ -1,4 +1,4 @@
-package nimbleway;
+package br.com.aexo.nimbleway.connection;
 
 import io.undertow.server.DefaultByteBufferPool;
 import io.undertow.websockets.client.WebSocketClient;
@@ -17,6 +17,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
 import java.util.function.Consumer;
 
 import org.slf4j.Logger;
@@ -41,10 +42,13 @@ public class UndertowWebSocketClientConnection implements WampConnection {
 	private WebSocketChannel webSocketChannel;
 	private Consumer<Exception> exceptionHandler;
 
-	public UndertowWebSocketClientConnection(XnioWorker worker, DefaultByteBufferPool bufferPool, URI ws) {
+	private ExecutorService executorService;
+
+	public UndertowWebSocketClientConnection(XnioWorker worker, DefaultByteBufferPool bufferPool, URI ws, ExecutorService executorService) {
 		this.worker = worker;
 		this.bufferPool = bufferPool;
 		this.uri = ws;
+		this.executorService = executorService;
 	}
 
 	@Override
@@ -75,15 +79,15 @@ public class UndertowWebSocketClientConnection implements WampConnection {
 
 			webSocketChannel = WebSocketClient.connectionBuilder(worker, bufferPool, uri).setClientNegotiation(new WebSocketClientNegotiation(Arrays.asList(subProtocols.keySet().toArray(new String[] {})), Arrays.asList())).connect().get();
 
-//			webSocketChannel.getCloseSetter().set(new ChannelListener<Channel>() {
-//
-//				@Override
-//				public void handleEvent(Channel channel) {
-//					worker.shutdown();
-//				}
-//			});
-			
-			
+			// webSocketChannel.getCloseSetter().set(new
+			// ChannelListener<Channel>() {
+			//
+			// @Override
+			// public void handleEvent(Channel channel) {
+			// worker.shutdown();
+			// }
+			// });
+
 			final SubProtocol subProtocol = subProtocols.get(webSocketChannel.getSubProtocol());
 
 			log.trace("subprotocol usaged: " + subProtocol.getName());
@@ -125,22 +129,27 @@ public class UndertowWebSocketClientConnection implements WampConnection {
 
 			// adiciona o receiver
 			webSocketChannel.getReceiveSetter().set(new AbstractReceiveListener() {
-				
-				
-				
+
 				@Override
 				protected void onClose(WebSocketChannel webSocketChannel, StreamSourceFrameChannel channel) throws IOException {
-				System.out.println("sss");
+					System.out.println("sss");
 					super.onClose(webSocketChannel, channel);
 				}
-				
-				
+
 				public void decode(Object message) {
 					try {
-						log.trace("<<< raw message received: " + message);
-						WampMessage msg = subProtocol.decode(message);
-						log.debug("<<< wamp message receved: " + msg);
-						transportOnReader.accept(msg);
+
+						executorService.submit(() -> {
+							try {
+								log.trace("<<< raw message received: " + message);
+								WampMessage msg = subProtocol.decode(message);
+								log.debug("<<< wamp message receved: " + msg);
+								transportOnReader.accept(msg);
+							} catch (Exception e) {
+								exceptionHandler.accept(e);
+							}
+						});
+
 					} catch (Exception e) {
 						exceptionHandler.accept(e);
 					}

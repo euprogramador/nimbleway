@@ -16,7 +16,10 @@ class GoodByeMessageJsonDecoder implements JsonDecoderMessage<GoodByeMessage> {
 
 	@Override
 	public GoodByeMessage decode(Object o) {
-		return new GoodByeMessage(false);
+
+		// TODO melhorar o decoder do goodbye
+
+		return new GoodByeMessage();
 	}
 
 	@Override

@@ -1,8 +1,8 @@
 import io.undertow.server.DefaultByteBufferPool;
 
 import java.net.URI;
-
-import nimbleway.UndertowWebSocketClientConnection;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import org.xnio.OptionMap;
 import org.xnio.Options;
@@ -10,18 +10,18 @@ import org.xnio.Xnio;
 import org.xnio.XnioWorker;
 
 import br.com.aexo.nimbleway.client.WampClient;
+import br.com.aexo.nimbleway.connection.UndertowWebSocketClientConnection;
 import br.com.aexo.nimbleway.core.Invocation;
 import br.com.aexo.nimbleway.core.Publication;
 import br.com.aexo.nimbleway.core.Registration;
 import br.com.aexo.nimbleway.core.Result;
-import br.com.aexo.nimbleway.core.ResultError;
 import br.com.aexo.nimbleway.core.Subscription;
 import br.com.aexo.nimbleway.core.WampConnection;
 
 public class Main {
 
 	public static void main(String[] args) throws Exception {
-		System.setProperty(org.slf4j.impl.SimpleLogger.DEFAULT_LOG_LEVEL_KEY, "TRACE");
+		System.setProperty(org.slf4j.impl.SimpleLogger.DEFAULT_LOG_LEVEL_KEY, "trace");
 
 		Xnio xnio = Xnio.getInstance("nio", Main.class.getClassLoader());
 
@@ -37,12 +37,14 @@ public class Main {
 
 		DefaultByteBufferPool bufferPool = new DefaultByteBufferPool(true, 8192 * 3, 1000, 10, 100);
 
-		WampConnection conn = new UndertowWebSocketClientConnection(worker, bufferPool, new URI("ws://localhost:8080/ws"));
+		ExecutorService executorService = Executors.newFixedThreadPool(30);
 
-		
+		WampConnection conn = new UndertowWebSocketClientConnection(worker, bufferPool, new URI("ws://localhost:8080/ws"), executorService);
+
 		WampClient client = new WampClient(conn);
 
 		client.onException((e) -> {
+			e.printStackTrace();
 			throw new RuntimeException(e);
 		});
 
@@ -68,7 +70,6 @@ public class Main {
 
 					System.out.println("unsubscribed");
 					System.out.println(session.getSubscriptions());
-
 				}).fail((e) -> {
 
 					System.out.println("falhou a unsubscribe");
@@ -156,26 +157,6 @@ public class Main {
 					System.out.println("tudo certo (FAIL)");
 				}).fail((error) -> {
 					System.out.println("ocorreu um erro (Esperado):" + error.getError() + " f:f " + error.params(0).as(String.class));
-				});
-
-			}).fail((e) -> {
-				System.out.println("ocorreu um erro ao registrar a falha  " + e.getError());
-			});
-			
-			
-			Registration regFailCall2 = Registration.toName("com.myapp.s2fn").callback((chamada) -> {
-				System.out.println("chamou....");
-				chamada.replyWith(ResultError.error("com.falha").args("ocorreu um erro no processamento").payload("severity", 3));
-			});
-
-			session.register(regFailCall2).then((r) -> {
-				System.out.println("registro da falha com sucesso");
-
-				Invocation i = Invocation.function("com.myapp.s2fn");
-				session.call(i).then((result) -> {
-					System.out.println("tudo certo (FAIL)");
-				}).fail((error) -> {
-					System.out.println("ocorreu um erro (Esperado):" + error.getError() + " f:f " + error.params(0).as(String.class)+ " p:p "+ error.payload("severity").as(String.class));
 				});
 
 			}).fail((e) -> {
