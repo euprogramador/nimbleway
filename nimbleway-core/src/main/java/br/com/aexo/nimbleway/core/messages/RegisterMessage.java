@@ -1,7 +1,5 @@
 package br.com.aexo.nimbleway.core.messages;
 
-import java.util.concurrent.ThreadLocalRandom;
-
 import br.com.aexo.nimbleway.core.Registration;
 
 public class RegisterMessage implements WampMessage {
@@ -9,8 +7,8 @@ public class RegisterMessage implements WampMessage {
 	private Long id;
 	private Registration registration;
 
-	public RegisterMessage(Registration registration) {
-		this.id = ThreadLocalRandom.current().nextLong(10000000, 99999999);
+	public RegisterMessage(Long id,Registration registration) {
+		this.id = id;
 		this.registration = registration;
 	}
 

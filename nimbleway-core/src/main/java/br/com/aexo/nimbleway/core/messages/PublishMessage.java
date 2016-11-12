@@ -9,8 +9,8 @@ public class PublishMessage implements WampMessage {
 	private Long id;
 	private Publication publication;
 
-	public PublishMessage(Publication publication) {
-		this.id = ThreadLocalRandom.current().nextLong(10000000, 99999999);
+	public PublishMessage(Long id,Publication publication) {
+		this.id = id;
 		this.publication = publication;
 	}
 

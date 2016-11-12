@@ -1,7 +1,5 @@
 package br.com.aexo.nimbleway.core.messages;
 
-import java.util.concurrent.ThreadLocalRandom;
-
 import br.com.aexo.nimbleway.core.Subscription;
 
 /**
@@ -15,8 +13,8 @@ public class SubscribeMessage implements WampMessage  {
 	private Long id;
 	private Subscription subscription;
 
-	public SubscribeMessage(Subscription subscription) {
-		this.id = ThreadLocalRandom.current().nextLong(10000000, 99999999);
+	public SubscribeMessage(Long id,Subscription subscription) {
+		this.id = id; 
 		this.subscription = subscription;
 	}
 

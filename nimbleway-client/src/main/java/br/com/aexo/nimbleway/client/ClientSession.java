@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Consumer;
 
 import org.jdeferred.Promise;
@@ -99,7 +100,6 @@ public class ClientSession {
 
 			if (msg instanceof WelcomeMessage) {
 				onOpenCallback.accept(this);
-
 			} else if (msg instanceof AbortMessage) {
 				AbortMessage message = (AbortMessage) msg;
 				exceptionHandler.accept(new WampException(message.getMessage(), message.getWampError()));
@@ -112,28 +112,24 @@ public class ClientSession {
 			} else if (msg instanceof RegisteredMessage) {
 				RegisteredMessage message = (RegisteredMessage) msg;
 				WaitReply<RegisterMessage, Registration> wr = retrieve(MessageType.REGISTER, message.getRequestId());
-				Registration registration = wr.getMessage().getRegistration()
-						.registrationId(message.getRegistrationId());
+				Registration registration = wr.getMessage().getRegistration().registrationId(message.getRegistrationId());
 				registrations.put(registration.getId(), registration);
 				wr.resolve(registration);
 			} else if (msg instanceof SubscribedMessage) {
 				SubscribedMessage message = (SubscribedMessage) msg;
 				WaitReply<SubscribeMessage, Subscription> wr = retrieve(MessageType.SUBSCRIBE, message.getRequestId());
-				Subscription subscription = wr.getMessage().getSubscription()
-						.registrationId(message.getRegistrationId());
+				Subscription subscription = wr.getMessage().getSubscription().registrationId(message.getRegistrationId());
 				subscriptions.put(subscription.getId(), subscription);
 				wr.resolve(subscription);
 			} else if (msg instanceof UnregisteredMessage) {
 				UnregisteredMessage message = (UnregisteredMessage) msg;
-				WaitReply<UnregisterMessage, Registration> wr = retrieve(MessageType.UNREGISTER,
-						message.getRequestId());
+				WaitReply<UnregisterMessage, Registration> wr = retrieve(MessageType.UNREGISTER, message.getRequestId());
 				Registration registration = wr.getMessage().getRegistration();
 				registrations.remove(registration.getId());
 				wr.resolve(registration);
 			} else if (msg instanceof UnsubscribedMessage) {
 				UnsubscribedMessage message = (UnsubscribedMessage) msg;
-				WaitReply<UnsubscribeMessage, Subscription> wr = retrieve(MessageType.UNSUBSCRIBE,
-						message.getRequestId());
+				WaitReply<UnsubscribeMessage, Subscription> wr = retrieve(MessageType.UNSUBSCRIBE, message.getRequestId());
 				Subscription subscription = wr.getMessage().getSubscription();
 				subscriptions.remove(subscription.getId());
 				wr.resolve(subscription);
@@ -159,8 +155,7 @@ public class ClientSession {
 		});
 	}
 
-	public ClientSession(WampTransport transport, Consumer<ClientSession> onOpenCallback,
-			Consumer<Exception> exceptionHandler) {
+	public ClientSession(WampTransport transport, Consumer<ClientSession> onOpenCallback, Consumer<Exception> exceptionHandler) {
 		this.transport = transport;
 		this.onOpenCallback = onOpenCallback;
 		this.exceptionHandler = exceptionHandler;
@@ -191,23 +186,17 @@ public class ClientSession {
 	}
 
 	public Promise<Subscription, WampError, Object> subscribe(Subscription subscription) {
-		SubscribeMessage msg = new SubscribeMessage(subscription);
-		WaitReply<SubscribeMessage, Subscription> wr = new WaitReply<>(msg);
-		waitReply(MessageType.SUBSCRIBE, msg.getId(), wr);
-		transport.write(msg);
-		return wr.getPromise();
+		SubscribeMessage msg = new SubscribeMessage(randomId(), subscription);
+		return waitReply(MessageType.SUBSCRIBE, msg.getId(), msg);
 	}
 
 	public Promise<Subscription, WampError, Object> unsubscribe(Subscription subscription) {
-		UnsubscribeMessage msg = new UnsubscribeMessage(subscription);
-		WaitReply<UnsubscribeMessage, Subscription> wr = new WaitReply<>(msg);
-		waitReply(MessageType.UNSUBSCRIBE, msg.getId(), wr);
-		transport.write(msg);
-		return wr.getPromise();
+		UnsubscribeMessage msg = new UnsubscribeMessage(randomId(), subscription);
+		return waitReply(MessageType.UNSUBSCRIBE, msg.getId(), msg);
 	}
 
 	public Promise<Publication, WampError, Object> publish(Publication pub) {
-		PublishMessage msg = new PublishMessage(pub);
+		PublishMessage msg = new PublishMessage(randomId(), pub);
 		WaitReply<PublishMessage, Publication> wr = new WaitReply<>(msg);
 		Boolean acknowledge = (Boolean) msg.getPublication().getOptions().get("acknowledge");
 		if (acknowledge != null && acknowledge) {
@@ -218,27 +207,29 @@ public class ClientSession {
 	}
 
 	public Promise<Registration, WampError, Object> register(Registration registration) {
-		RegisterMessage msg = new RegisterMessage(registration);
-		WaitReply<RegisterMessage, Registration> wr = new WaitReply<>(msg);
-		waitReply(MessageType.REGISTER, msg.getId(), wr);
-		transport.write(msg);
-		return wr.getPromise();
+		RegisterMessage msg = new RegisterMessage(randomId(), registration);
+		return waitReply(MessageType.REGISTER, msg.getId(), msg);
 	}
 
 	public Promise<Registration, WampError, Object> unregister(Registration registration) {
-		UnregisterMessage msg = new UnregisterMessage(registration);
-		WaitReply<UnregisterMessage, Registration> wr = new WaitReply<UnregisterMessage, Registration>(msg);
-		waitReply(MessageType.UNREGISTER, msg.getId(), wr);
+		UnregisterMessage msg = new UnregisterMessage(randomId(), registration);
+		return waitReply(MessageType.UNREGISTER, msg.getId(), msg);
+	}
+
+	public Promise<ResultCall, WampError, Object> call(Invocation invocation) {
+		CallMessage msg = new CallMessage(randomId(), invocation);
+		return waitReply(MessageType.CALL, msg.getId(), msg);
+	}
+
+	public <RESOLVED, MESSAGE extends WampMessage> Promise<RESOLVED, WampError, Object> waitReply(MessageType type, Long id, MESSAGE msg) {
+		WaitReply<MESSAGE, RESOLVED> wr = new WaitReply<MESSAGE, RESOLVED>(msg);
+		waitReply(type, id, wr);
 		transport.write(msg);
 		return wr.getPromise();
 	}
 
-	public Promise<ResultCall, WampError, Object> call(Invocation invocation) {
-		CallMessage msg = new CallMessage(invocation);
-		WaitReply<CallMessage, ResultCall> wr = new WaitReply<CallMessage, ResultCall>(msg);
-		waitReply(MessageType.CALL, msg.getId(), wr);
-		transport.write(msg);
-		return wr.getPromise();
+	private long randomId() {
+		return ThreadLocalRandom.current().nextLong(10000000, 99999999);
 	}
 
 	private void dispachEvent(EventMessage message) {
@@ -259,12 +250,8 @@ public class ClientSession {
 		try {
 			registration.getCallback().accept(call);
 		} catch (Exception e) {
-			log.error("invocation error",
-					new IllegalStateException(
-							"Protect your procedure correctly with a try catch block and report the occurrence of the error using ResultError for the call in replyWith",
-							e));
-			ResultError err = ResultError.error("br.com.aexo.nimbleway.unknown_error")
-					.args("An unknown error has occurred");
+			log.error("invocation error", new IllegalStateException("Protect your procedure correctly with a try catch block and report the occurrence of the error using ResultError for the call in replyWith", e));
+			ResultError err = ResultError.error("br.com.aexo.nimbleway.unknown_error").args("An unknown error has occurred");
 			call.replyWith(err);
 			exceptionHandler.accept(e);
 		}

@@ -1,4 +1,4 @@
-import java.util.Collection;
+import java.util.Iterator;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.function.Consumer;
@@ -116,7 +116,7 @@ class InVMWampConnection implements WampConnection {
 	}
 
 	@Override
-	public void open(Collection<SubProtocol> supportedSubProtocols) {
+	public void open(Iterator<SubProtocol> supportedSubProtocols) {
 		onOpenCallback.accept(transport);
 	}
 

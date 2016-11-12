@@ -45,7 +45,7 @@ public class WampRouter {
 				});
 			});
 
-		connection.open(Collections.emptyList());
+		connection.open(Collections.emptyIterator());
 	}
 
 }
