@@ -1,6 +1,7 @@
-package br.com.aexo.nimbleway.core.subprotocols.json;
+package br.com.aexo.nimbleway.core.subprotocols.json.decoder;
 
 import br.com.aexo.nimbleway.core.messages.GoodByeMessage;
+import br.com.aexo.nimbleway.core.subprotocols.json.JsonDecoderMessage;
 
 /**
  * Decoder of abort message
@@ -8,7 +9,7 @@ import br.com.aexo.nimbleway.core.messages.GoodByeMessage;
  * @author carlosr
  *
  */
-class GoodByeMessageJsonDecoder implements JsonDecoderMessage<GoodByeMessage> {
+public class GoodByeMessageJsonDecoder implements JsonDecoderMessage<GoodByeMessage> {
 
 	@Override
 	public GoodByeMessage decode(Object o) {

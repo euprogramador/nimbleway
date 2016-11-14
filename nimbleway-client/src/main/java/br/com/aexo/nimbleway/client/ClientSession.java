@@ -44,6 +44,7 @@ import br.com.aexo.nimbleway.core.messages.UnsubscribeMessage;
 import br.com.aexo.nimbleway.core.messages.UnsubscribedMessage;
 import br.com.aexo.nimbleway.core.messages.WampMessage;
 import br.com.aexo.nimbleway.core.messages.WelcomeMessage;
+import br.com.aexo.nimbleway.utils.SpinLock;
 
 /**
  * represent this session to router
@@ -92,6 +93,7 @@ public class ClientSession {
 	}
 
 	public void open(String realm) {
+		this.realm = realm;
 		transport.write(new HelloMessage(realm));
 	}
 
@@ -99,6 +101,7 @@ public class ClientSession {
 		transport.onRead((msg) -> {
 
 			if (msg instanceof WelcomeMessage) {
+				id = ((WelcomeMessage) msg).getSessionId();
 				onOpenCallback.accept(this);
 			} else if (msg instanceof AbortMessage) {
 				AbortMessage message = (AbortMessage) msg;
@@ -143,10 +146,28 @@ public class ClientSession {
 				wr.reject(new WampError(message));
 			} else if (msg instanceof InvocationMessage) {
 				InvocationMessage message = (InvocationMessage) msg;
-				invoke(message);
+				Registration registration = registrations.get(message.getFunctionId());
+				RegistrationCall call = new RegistrationCall(message, transport);
+				try {
+					registration.getCallback().accept(call);
+				} catch (Exception e) {
+					log.error("invocation error", new IllegalStateException("Protect your procedure correctly with a try catch block and report the occurrence of the error using ResultError for the call in replyWith", e));
+					ResultError err = ResultError.error("br.com.aexo.nimbleway.unknown_error").args("An unknown error has occurred");
+					call.replyWith(err);
+					exceptionHandler.accept(e);
+				}
 			} else if (msg instanceof EventMessage) {
 				EventMessage message = (EventMessage) msg;
-				dispachEvent(message);
+				Subscription subscription = subscriptions.get(message.getSubscriptionId());
+
+				SubscriptionCall call = new SubscriptionCall(message);
+				try {
+					subscription.getCallback().accept(call);
+				} catch (Exception e) {
+					log.error("There was an error processing event", e);
+					exceptionHandler.accept(e);
+				}
+
 			} else if (msg instanceof GoodByeMessage) {
 				if (isOpen)
 					close();
@@ -232,28 +253,4 @@ public class ClientSession {
 		return ThreadLocalRandom.current().nextLong(10000000, 99999999);
 	}
 
-	private void dispachEvent(EventMessage message) {
-		Subscription subscription = subscriptions.get(message.getSubscriptionId());
-
-		SubscriptionCall call = new SubscriptionCall(message);
-		try {
-			subscription.getCallback().accept(call);
-		} catch (Exception e) {
-			log.error("There was an error processing event", e);
-			exceptionHandler.accept(e);
-		}
-	}
-
-	private void invoke(InvocationMessage message) {
-		Registration registration = registrations.get(message.getFunctionId());
-		RegistrationCall call = new RegistrationCall(message, transport);
-		try {
-			registration.getCallback().accept(call);
-		} catch (Exception e) {
-			log.error("invocation error", new IllegalStateException("Protect your procedure correctly with a try catch block and report the occurrence of the error using ResultError for the call in replyWith", e));
-			ResultError err = ResultError.error("br.com.aexo.nimbleway.unknown_error").args("An unknown error has occurred");
-			call.replyWith(err);
-			exceptionHandler.accept(e);
-		}
-	}
 }

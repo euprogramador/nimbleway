@@ -1,4 +1,4 @@
-package br.com.aexo.nimbleway.core.subprotocols.json;
+package br.com.aexo.nimbleway.core.subprotocols.json.encoder;
 
 import java.io.IOException;
 import java.io.StringWriter;
@@ -7,34 +7,36 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
-import br.com.aexo.nimbleway.core.messages.PublishMessage;
 import br.com.aexo.nimbleway.core.messages.WampMessage;
+import br.com.aexo.nimbleway.core.messages.YieldMessage;
+import br.com.aexo.nimbleway.core.subprotocols.json.JsonEncoderMessage;
 
-class PublishMessageJsonEncoder implements JsonEncoderMessage<PublishMessage> {
+public class YieldMessageJsonEncoder implements JsonEncoderMessage<YieldMessage> {
+
 
 	@Override
-	public Object encode(PublishMessage msg) {
+	public Object encode(YieldMessage msg) {
 		try {
 			ObjectMapper mapper = new ObjectMapper();
 
 			ArrayNode node = mapper.createArrayNode();
-			node.add(16);
-			node.add(msg.getId());
+			node.add(70);
+
+			node.add(msg.getInReplyTo().getRequestId());
 
 			ObjectNode options = mapper.createObjectNode();
 
-			msg.getPublication().getOptions().forEach((k,v)-> {
+			msg.getReply().getOptions().forEach((k,v)-> {
 				options.set(k,mapper.valueToTree(v));
 			});
 			
 			node.add(options);
-			node.add(msg.getPublication().getTopic());
 			
-			node.add(mapper.valueToTree(msg.getPublication().getArguments()));
-			node.add(mapper.valueToTree(msg.getPublication().getPayload()));
+			node.add(mapper.valueToTree(msg.getReply().getArguments()));
+			node.add(mapper.valueToTree(msg.getReply().getPayload()));
+			
 
 			StringWriter writer = new StringWriter();
-
 			mapper.writeValue(writer, node);
 			return writer.toString();
 		} catch (IOException e) {
@@ -45,7 +47,7 @@ class PublishMessageJsonEncoder implements JsonEncoderMessage<PublishMessage> {
 
 	@Override
 	public boolean isEncodeOf(WampMessage type) {
-		return type instanceof PublishMessage;
+		return type instanceof YieldMessage;
 	}
 
 }

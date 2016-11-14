@@ -1,4 +1,4 @@
-package br.com.aexo.nimbleway.client;
+package br.com.aexo.nimbleway.utils;
 
 public class SpinLock {
 

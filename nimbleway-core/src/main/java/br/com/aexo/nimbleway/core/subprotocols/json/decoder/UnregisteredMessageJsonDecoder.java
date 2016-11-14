@@ -1,11 +1,12 @@
-package br.com.aexo.nimbleway.core.subprotocols.json;
+package br.com.aexo.nimbleway.core.subprotocols.json.decoder;
 
+
+import br.com.aexo.nimbleway.core.messages.UnregisteredMessage;
+import br.com.aexo.nimbleway.core.subprotocols.json.JsonDecoderMessage;
 
 import com.fasterxml.jackson.databind.node.ArrayNode;
 
-import br.com.aexo.nimbleway.core.messages.UnregisteredMessage;
-
-class UnregisteredMessageJsonDecoder implements JsonDecoderMessage<UnregisteredMessage> {
+public class UnregisteredMessageJsonDecoder implements JsonDecoderMessage<UnregisteredMessage> {
 
 	@Override
 	public UnregisteredMessage decode(Object o) {

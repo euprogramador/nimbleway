@@ -1,4 +1,4 @@
-package br.com.aexo.nimbleway.core.subprotocols.json;
+package br.com.aexo.nimbleway.core.subprotocols.json.encoder;
 
 import java.io.IOException;
 import java.io.StringWriter;
@@ -7,35 +7,35 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
+import br.com.aexo.nimbleway.core.messages.CallMessage;
 import br.com.aexo.nimbleway.core.messages.WampMessage;
-import br.com.aexo.nimbleway.core.messages.YieldMessage;
+import br.com.aexo.nimbleway.core.subprotocols.json.JsonEncoderMessage;
 
-class YieldMessageJsonEncoder implements JsonEncoderMessage<YieldMessage> {
-
+public class CallMessageJsonEncoder implements JsonEncoderMessage<CallMessage> {
 
 	@Override
-	public Object encode(YieldMessage msg) {
+	public Object encode(CallMessage msg) {
 		try {
 			ObjectMapper mapper = new ObjectMapper();
 
 			ArrayNode node = mapper.createArrayNode();
-			node.add(70);
-
-			node.add(msg.getInReplyTo().getRequestId());
+			node.add(48);
+			node.add(msg.getId());
 
 			ObjectNode options = mapper.createObjectNode();
 
-			msg.getReply().getOptions().forEach((k,v)-> {
+			msg.getInvocation().getOptions().forEach((k,v)-> {
 				options.set(k,mapper.valueToTree(v));
 			});
 			
 			node.add(options);
-			
-			node.add(mapper.valueToTree(msg.getReply().getArguments()));
-			node.add(mapper.valueToTree(msg.getReply().getPayload()));
-			
+			node.add(msg.getInvocation().getFunction());
+
+			node.add(mapper.valueToTree(msg.getInvocation().getArguments()));
+			node.add(mapper.valueToTree(msg.getInvocation().getPayload()));
 
 			StringWriter writer = new StringWriter();
+
 			mapper.writeValue(writer, node);
 			return writer.toString();
 		} catch (IOException e) {
@@ -46,7 +46,7 @@ class YieldMessageJsonEncoder implements JsonEncoderMessage<YieldMessage> {
 
 	@Override
 	public boolean isEncodeOf(WampMessage type) {
-		return type instanceof YieldMessage;
+		return type instanceof CallMessage;
 	}
 
 }

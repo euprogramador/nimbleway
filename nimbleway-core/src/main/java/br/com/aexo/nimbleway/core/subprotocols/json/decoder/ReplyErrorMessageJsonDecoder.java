@@ -1,13 +1,14 @@
-package br.com.aexo.nimbleway.core.subprotocols.json;
+package br.com.aexo.nimbleway.core.subprotocols.json.decoder;
 
 import java.util.Map;
+
+import br.com.aexo.nimbleway.core.MessageType;
+import br.com.aexo.nimbleway.core.messages.ReplyErrorMessage;
+import br.com.aexo.nimbleway.core.subprotocols.json.JsonDecoderMessage;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
-
-import br.com.aexo.nimbleway.core.MessageType;
-import br.com.aexo.nimbleway.core.messages.ReplyErrorMessage;
 
 /**
  * Decoder of abort message
@@ -15,7 +16,7 @@ import br.com.aexo.nimbleway.core.messages.ReplyErrorMessage;
  * @author carlosr
  *
  */
-class ReplyErrorMessageJsonDecoder implements JsonDecoderMessage<ReplyErrorMessage> {
+public class ReplyErrorMessageJsonDecoder implements JsonDecoderMessage<ReplyErrorMessage> {
 
 	@Override
 	public ReplyErrorMessage decode(Object o) {

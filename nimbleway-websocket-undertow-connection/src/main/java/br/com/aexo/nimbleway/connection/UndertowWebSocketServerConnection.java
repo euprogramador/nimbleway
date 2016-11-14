@@ -57,7 +57,6 @@ public class UndertowWebSocketServerConnection {
 				channel.getReceiveSetter().set(new AbstractReceiveListener() {
 
 					public void decode(Object message) {
-						
 					
 						
 						WebSockets.sendText(msg, channel, null);

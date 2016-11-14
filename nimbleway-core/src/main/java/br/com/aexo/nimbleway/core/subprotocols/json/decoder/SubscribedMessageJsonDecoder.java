@@ -1,11 +1,13 @@
-package br.com.aexo.nimbleway.core.subprotocols.json;
 
+package br.com.aexo.nimbleway.core.subprotocols.json.decoder;
+
+
+import br.com.aexo.nimbleway.core.messages.SubscribedMessage;
+import br.com.aexo.nimbleway.core.subprotocols.json.JsonDecoderMessage;
 
 import com.fasterxml.jackson.databind.node.ArrayNode;
 
-import br.com.aexo.nimbleway.core.messages.SubscribedMessage;
-
-class SubscribedMessageJsonDecoder implements JsonDecoderMessage<SubscribedMessage> {
+public class SubscribedMessageJsonDecoder implements JsonDecoderMessage<SubscribedMessage> {
 
 	@Override
 	public SubscribedMessage decode(Object o) {

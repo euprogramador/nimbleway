@@ -1,14 +1,15 @@
-package br.com.aexo.nimbleway.core.subprotocols.json;
+package br.com.aexo.nimbleway.core.subprotocols.json.decoder;
 
 import java.util.Map;
+
+import br.com.aexo.nimbleway.core.messages.ResultMessage;
+import br.com.aexo.nimbleway.core.subprotocols.json.JsonDecoderMessage;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 
-import br.com.aexo.nimbleway.core.messages.ResultMessage;
-
-class ResultMessageJsonDecoder implements JsonDecoderMessage<ResultMessage> {
+public class ResultMessageJsonDecoder implements JsonDecoderMessage<ResultMessage> {
 
 	@Override
 	public ResultMessage decode(Object o) {

@@ -1,4 +1,4 @@
-package br.com.aexo.nimbleway.core.subprotocols.json;
+package br.com.aexo.nimbleway.core.subprotocols.json.encoder;
 
 import java.io.IOException;
 import java.io.StringWriter;
@@ -7,31 +7,32 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
-import br.com.aexo.nimbleway.core.messages.CallMessage;
+import br.com.aexo.nimbleway.core.messages.PublishMessage;
 import br.com.aexo.nimbleway.core.messages.WampMessage;
+import br.com.aexo.nimbleway.core.subprotocols.json.JsonEncoderMessage;
 
-class CallMessageJsonEncoder implements JsonEncoderMessage<CallMessage> {
+public class PublishMessageJsonEncoder implements JsonEncoderMessage<PublishMessage> {
 
 	@Override
-	public Object encode(CallMessage msg) {
+	public Object encode(PublishMessage msg) {
 		try {
 			ObjectMapper mapper = new ObjectMapper();
 
 			ArrayNode node = mapper.createArrayNode();
-			node.add(48);
+			node.add(16);
 			node.add(msg.getId());
 
 			ObjectNode options = mapper.createObjectNode();
 
-			msg.getInvocation().getOptions().forEach((k,v)-> {
+			msg.getPublication().getOptions().forEach((k,v)-> {
 				options.set(k,mapper.valueToTree(v));
 			});
 			
 			node.add(options);
-			node.add(msg.getInvocation().getFunction());
-
-			node.add(mapper.valueToTree(msg.getInvocation().getArguments()));
-			node.add(mapper.valueToTree(msg.getInvocation().getPayload()));
+			node.add(msg.getPublication().getTopic());
+			
+			node.add(mapper.valueToTree(msg.getPublication().getArguments()));
+			node.add(mapper.valueToTree(msg.getPublication().getPayload()));
 
 			StringWriter writer = new StringWriter();
 
@@ -45,7 +46,7 @@ class CallMessageJsonEncoder implements JsonEncoderMessage<CallMessage> {
 
 	@Override
 	public boolean isEncodeOf(WampMessage type) {
-		return type instanceof CallMessage;
+		return type instanceof PublishMessage;
 	}
 
 }

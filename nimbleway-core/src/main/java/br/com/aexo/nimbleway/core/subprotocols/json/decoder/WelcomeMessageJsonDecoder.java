@@ -1,11 +1,12 @@
-package br.com.aexo.nimbleway.core.subprotocols.json;
+package br.com.aexo.nimbleway.core.subprotocols.json.decoder;
+
+import br.com.aexo.nimbleway.core.messages.WelcomeMessage;
+import br.com.aexo.nimbleway.core.subprotocols.json.JsonDecoderMessage;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 
-import br.com.aexo.nimbleway.core.messages.WelcomeMessage;
-
-class WelcomeMessageJsonDecoder implements JsonDecoderMessage<WelcomeMessage> {
+public class WelcomeMessageJsonDecoder implements JsonDecoderMessage<WelcomeMessage> {
 
 	@Override
 	public boolean isDecodeOf(Integer messageIdType) {

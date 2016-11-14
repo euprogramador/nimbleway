@@ -1,4 +1,4 @@
-package br.com.aexo.nimbleway.core.subprotocols.json;
+package br.com.aexo.nimbleway.core.subprotocols.json.encoder;
 
 import java.io.IOException;
 import java.io.StringWriter;
@@ -9,8 +9,9 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import br.com.aexo.nimbleway.core.messages.SendErrorMessage;
 import br.com.aexo.nimbleway.core.messages.WampMessage;
+import br.com.aexo.nimbleway.core.subprotocols.json.JsonEncoderMessage;
 
-class SendErrorMessageJsonEncoder implements JsonEncoderMessage<SendErrorMessage> {
+public class SendErrorMessageJsonEncoder implements JsonEncoderMessage<SendErrorMessage> {
 
 	@Override
 	public Object encode(SendErrorMessage msg) {

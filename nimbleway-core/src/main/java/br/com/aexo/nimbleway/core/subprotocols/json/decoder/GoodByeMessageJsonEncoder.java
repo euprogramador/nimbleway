@@ -1,14 +1,15 @@
-package br.com.aexo.nimbleway.core.subprotocols.json;
+package br.com.aexo.nimbleway.core.subprotocols.json.decoder;
 
 import java.io.IOException;
 import java.io.StringWriter;
 
+import br.com.aexo.nimbleway.core.messages.GoodByeMessage;
+import br.com.aexo.nimbleway.core.messages.WampMessage;
+import br.com.aexo.nimbleway.core.subprotocols.json.JsonEncoderMessage;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-
-import br.com.aexo.nimbleway.core.messages.GoodByeMessage;
-import br.com.aexo.nimbleway.core.messages.WampMessage;
 
 /**
  * encoder from goodbyeMessage
@@ -16,7 +17,7 @@ import br.com.aexo.nimbleway.core.messages.WampMessage;
  * @author carlosr
  *
  */
-class GoodByeMessageJsonEncoder implements JsonEncoderMessage<GoodByeMessage> {
+public class GoodByeMessageJsonEncoder implements JsonEncoderMessage<GoodByeMessage> {
 
 	@Override
 	public Object encode(GoodByeMessage msg) {

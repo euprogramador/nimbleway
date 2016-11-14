@@ -1,136 +1,67 @@
-import java.util.Iterator;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.function.Consumer;
 
 import br.com.aexo.nimbleway.client.WampClient;
+import br.com.aexo.nimbleway.core.Invocation;
+import br.com.aexo.nimbleway.core.Publication;
+import br.com.aexo.nimbleway.core.Registration;
+import br.com.aexo.nimbleway.core.Result;
 import br.com.aexo.nimbleway.core.Subscription;
-import br.com.aexo.nimbleway.core.WampConnection;
-import br.com.aexo.nimbleway.core.WampTransport;
-import br.com.aexo.nimbleway.core.messages.WampMessage;
-import br.com.aexo.nimbleway.core.subprotocols.SubProtocol;
 import br.com.aexo.nimbleway.router.WampRouter;
 
 public class Main2 {
 
 	public static void main(String[] args) {
+		System.setProperty(org.slf4j.impl.SimpleLogger.DEFAULT_LOG_LEVEL_KEY, "debug");
 
-		PipeConnection vm = new PipeConnection();
-		
-		new WampRouter(vm.point1()).start();
-		WampClient client = new WampClient(vm.point2());
+		Consumer<Exception> exceptionHandler = (e) -> {
+			e.printStackTrace();
+			throw new RuntimeException(e);
+		};
 
-		client.onOpen((session) -> {
-			System.out.println("abriu");
+		InVMServerConnection serverConnection = new InVMServerConnection("wamp.2.json");
 
-			Subscription sub = Subscription.toTopic("1").callback((callTopic) -> {
-			});
+		WampRouter router = new WampRouter(serverConnection);
+		router.onExceptionHandler(exceptionHandler);
+		router.start();
 
-			session.subscribe(sub).then((_sub) -> {
-				System.out.println("OK");
+		WampClient client1 = new WampClient(serverConnection.newClientConnection());
+		WampClient client2 = new WampClient(serverConnection.newClientConnection());
+
+		client1.onException(exceptionHandler);
+		client2.onException(exceptionHandler);
+
+		client1.onOpen((session) -> {
+			System.out.println("sessão cliente 1: " + session.getId());
+
+			session.register(Registration.toName("com.my.fn").callback((chamada) -> {
+				System.out.println("invocou a função");
+				chamada.replyWith(Result.create());
+				session.publish(Publication.toTopic("com.my.topic"));
+			})).then((Registration reg) -> {
+				System.out.println("registro da função efetuado com sucesso");
 			}).fail((e) -> {
-				System.out.println("falhou");
+				System.out.println("Ocorreu um erro ao efetuar o registro da função: " + e.getError());
 			});
-
 		});
 
-		client.open("realm1");
-	}
-}
+		client2.onOpen((session) -> {
+			System.out.println("sessão cliente 2: " + session.getId());
 
-class PipeConnection {
-
-	private InVMWampConnection conn1;
-	private InVMWampConnection conn2;
-
-	PipeConnection() {
-
-		ExecutorService pool = Executors.newCachedThreadPool();
-
-		PipeWampTransport t1 = new PipeWampTransport(pool);
-		PipeWampTransport t2 = new PipeWampTransport(pool);
-
-		t1.connect(t2);
-		t2.connect(t1);
-
-		conn1 = new InVMWampConnection(t1);
-		conn2 = new InVMWampConnection(t2);
-	}
-
-	public WampConnection point1() {
-		return conn1;
-	}
-
-	public WampConnection point2() {
-		return conn2;
-	}
-
-}
-
-class PipeWampTransport implements WampTransport {
-
-	private Consumer<WampMessage> onRead;
-
-	private PipeWampTransport transport;
-
-	private ExecutorService pool;
-
-	public PipeWampTransport(ExecutorService pool) {
-		this.pool = pool;
-	}
-
-	@Override
-	public void onRead(Consumer<WampMessage> fn) {
-		this.onRead = fn;
-
-	}
-
-	public void connect(PipeWampTransport transport) {
-		this.transport = transport;
-	}
-
-	@Override
-	public void write(WampMessage wampMessage) {
-		pool.submit(() -> {
-			try {
-				transport.onRead.accept(wampMessage);
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
+			// session.subscribe(Subscription.toTopic("com.my.topic").callback((chamada)
+			// -> {
+			// System.out.println("chamou o topico");
+			// }));
+			//
+			// new Timer().scheduleAtFixedRate(new TimerTask() {
+			// public void run() {
+			// session.call(Invocation.function("com.my.fn"));
+			// }
+			// }, 1000L, 2000L);
 		});
+
+		client1.open("realm1");
+		client2.open("realm2");
 	}
-
-	@Override
-	public void close() {
-	}
-
-}
-
-class InVMWampConnection implements WampConnection {
-
-	private Consumer<WampTransport> onOpenCallback;
-	private PipeWampTransport transport;
-
-	public InVMWampConnection(PipeWampTransport transport) {
-		this.transport = transport;
-	}
-
-	@Override
-	public void open(Iterator<SubProtocol> supportedSubProtocols) {
-		onOpenCallback.accept(transport);
-	}
-
-	@Override
-	public void close() {
-	}
-
-	@Override
-	public void onOpen(Consumer<WampTransport> onOpenCallback) {
-		this.onOpenCallback = onOpenCallback;
-	}
-
-	@Override
-	public void onException(Consumer<Exception> exceptionHandler) {
-	}
-
 }

@@ -1,8 +1,9 @@
-package br.com.aexo.nimbleway.core.subprotocols.json;
-
-import com.fasterxml.jackson.databind.node.ArrayNode;
+package br.com.aexo.nimbleway.core.subprotocols.json.decoder;
 
 import br.com.aexo.nimbleway.core.messages.AbortMessage;
+import br.com.aexo.nimbleway.core.subprotocols.json.JsonDecoderMessage;
+
+import com.fasterxml.jackson.databind.node.ArrayNode;
 
 /**
  * Decoder of abort message
@@ -10,7 +11,7 @@ import br.com.aexo.nimbleway.core.messages.AbortMessage;
  * @author carlosr
  *
  */
-class AbortMessageJsonDecoder implements JsonDecoderMessage<AbortMessage> {
+public class AbortMessageJsonDecoder implements JsonDecoderMessage<AbortMessage> {
 
 	@Override
 	public AbortMessage decode(Object o) {
