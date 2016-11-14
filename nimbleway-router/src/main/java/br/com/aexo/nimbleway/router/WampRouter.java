@@ -1,25 +1,22 @@
 package br.com.aexo.nimbleway.router;
 
-import java.util.Map;
 import java.util.ServiceLoader;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Consumer;
 
-import br.com.aexo.nimbleway.core.WampConnection;
-import br.com.aexo.nimbleway.core.messages.HelloMessage;
-import br.com.aexo.nimbleway.core.messages.RegisterMessage;
-import br.com.aexo.nimbleway.core.messages.RegisteredMessage;
-import br.com.aexo.nimbleway.core.messages.WelcomeMessage;
-import br.com.aexo.nimbleway.core.subprotocols.SubProtocol;
+import br.com.aexo.nimbleway.router.connection.RouterConnection;
+import br.com.aexo.nimbleway.router.connection.subprotocols.RouterSubProtocol;
+import br.com.aexo.nimbleway.router.messages.HelloMessage;
+import br.com.aexo.nimbleway.router.messages.WelcomeMessage;
 
 public class WampRouter {
 
-	private WampConnection connection;
+	private RouterConnection connection;
 
 	private Consumer<Exception> exceptionHandler;
-	private Registrations registrations = new Registrations();
+//	private Registrations registrations = new Registrations();
 
-	public WampRouter(WampConnection connection) {
+	public WampRouter(RouterConnection connection) {
 		this.connection = connection;
 	}
 
@@ -29,7 +26,7 @@ public class WampRouter {
 
 	public void start() {
 
-		ServiceLoader<SubProtocol> subProtocols = ServiceLoader.load(SubProtocol.class);
+		ServiceLoader<RouterSubProtocol> subProtocols = ServiceLoader.load(RouterSubProtocol.class);
 		connection.onException(exceptionHandler);
 
 		connection.onOpen((transport) -> {
@@ -37,15 +34,14 @@ public class WampRouter {
 
 				// configura o onRead no transporte
 				transport.onRead((msg) -> {
-
 					if (msg instanceof HelloMessage) {
 						long sessionId = randomId();
 						transport.write(new WelcomeMessage(sessionId, "nimbleWay"));
-					} else if (msg instanceof RegisterMessage) {
-						long id = randomId();
-						registrations.save(id, transport, ((RegisterMessage) msg).getRegistration());
-						RegisteredMessage resgistered = new RegisteredMessage(((RegisterMessage) msg).getId(), randomId());
-						transport.write(resgistered);
+//					} else if (msg instanceof RegisterMessage) {
+//						long id = randomId();
+//						registrations.save(id, transport, ((RegisterMessage) msg).getRegistration());
+//						RegisteredMessage resgistered = new RegisteredMessage(((RegisterMessage) msg).getId(), randomId());
+//						transport.write(resgistered);
 					}
 
 				});

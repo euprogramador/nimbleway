@@ -11,7 +11,7 @@
 	<dependencies>
 		<dependency>
 			<groupId>br.com.aexo</groupId>
-			<artifactId>nimbleway-core</artifactId>
+			<artifactId>nimbleway-router-connection</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 	</dependencies>

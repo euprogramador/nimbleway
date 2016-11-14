@@ -3,10 +3,10 @@ package br.com.aexo.nimbleway.client;
 import org.jdeferred.Promise;
 import org.jdeferred.impl.DeferredObject;
 
-import br.com.aexo.nimbleway.core.WampError;
-import br.com.aexo.nimbleway.core.messages.WampMessage;
+import br.com.aexo.nimbleway.client.interaction.WampError;
+import br.com.aexo.nimbleway.client.messages.ClientMessage;
 
-public class WaitReply<A extends WampMessage, T> {
+public class WaitReply<A extends ClientMessage, T> {
 
 	private A message;
 	private DeferredObject<T, WampError, Object> deferred;

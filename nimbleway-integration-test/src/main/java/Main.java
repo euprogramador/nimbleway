@@ -1,8 +1,4 @@
-import io.undertow.server.DefaultByteBufferPool;
-
 import java.net.URI;
-import java.util.Iterator;
-import java.util.ServiceLoader;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -12,14 +8,14 @@ import org.xnio.Xnio;
 import org.xnio.XnioWorker;
 
 import br.com.aexo.nimbleway.client.WampClient;
-import br.com.aexo.nimbleway.connection.UndertowWebSocketClientConnection;
-import br.com.aexo.nimbleway.core.Invocation;
-import br.com.aexo.nimbleway.core.Publication;
-import br.com.aexo.nimbleway.core.Registration;
-import br.com.aexo.nimbleway.core.Result;
-import br.com.aexo.nimbleway.core.Subscription;
-import br.com.aexo.nimbleway.core.WampConnection;
-import br.com.aexo.nimbleway.core.subprotocols.SubProtocol;
+import br.com.aexo.nimbleway.client.connection.ClientConnection;
+import br.com.aexo.nimbleway.client.connection.UndertowWebSocketClientConnection;
+import br.com.aexo.nimbleway.client.interaction.Invocation;
+import br.com.aexo.nimbleway.client.interaction.Publication;
+import br.com.aexo.nimbleway.client.interaction.Registration;
+import br.com.aexo.nimbleway.client.interaction.Result;
+import br.com.aexo.nimbleway.client.interaction.Subscription;
+import io.undertow.server.DefaultByteBufferPool;
 
 public class Main {
 
@@ -44,7 +40,7 @@ public class Main {
 
 		ExecutorService executorService = Executors.newFixedThreadPool(30);
 
-		WampConnection conn = new UndertowWebSocketClientConnection(worker, bufferPool, new URI("ws://localhost:8080/ws"), executorService);
+		ClientConnection conn = new UndertowWebSocketClientConnection(worker, bufferPool, new URI("ws://localhost:8080/ws"), executorService);
 
 		WampClient client = new WampClient(conn);
 

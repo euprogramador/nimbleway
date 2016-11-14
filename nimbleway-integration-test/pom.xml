@@ -15,14 +15,20 @@
 		</dependency>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
+			<artifactId>nimbleway-client-undertowwebsocketconnection</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
 			<artifactId>nimbleway-router</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
-			<artifactId>nimbleway-websocket-undertow-connection</artifactId>
+			<artifactId>nimbleway-router-undertowwebsocketconnection</artifactId>
 			<version>${project.version}</version>
 		</dependency>
+
 
 	</dependencies>
 

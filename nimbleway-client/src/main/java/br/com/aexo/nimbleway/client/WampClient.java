@@ -6,8 +6,8 @@ import java.util.function.Consumer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import br.com.aexo.nimbleway.core.WampConnection;
-import br.com.aexo.nimbleway.core.subprotocols.SubProtocol;
+import br.com.aexo.nimbleway.client.connection.ClientConnection;
+import br.com.aexo.nimbleway.client.subprotocols.ClientSubProtocol;
 
 /**
  * class responsible for client functionality
@@ -19,7 +19,7 @@ public class WampClient {
 
 	private static Logger log = LoggerFactory.getLogger(WampClient.class);
 
-	private WampConnection connection;
+	private ClientConnection connection;
 
 	private Consumer<ClientSession> onOpenCallback = (session) -> {
 	};
@@ -32,7 +32,7 @@ public class WampClient {
 	 * 
 	 * @param connection
 	 */
-	public WampClient(WampConnection connection) {
+	public WampClient(ClientConnection connection) {
 		this.connection = connection;
 	}
 
@@ -53,7 +53,7 @@ public class WampClient {
 	public void open(String realm) {
 		log.debug("open connection to router");
 
-		ServiceLoader<SubProtocol> subProtocols = ServiceLoader.load(SubProtocol.class);
+		ServiceLoader<ClientSubProtocol> subProtocols = ServiceLoader.load(ClientSubProtocol.class);
 		connection.onException(exceptionHandler);
 
 		connection.onOpen((transport) -> {

@@ -12,39 +12,39 @@ import org.jdeferred.Promise;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import br.com.aexo.nimbleway.core.Invocation;
-import br.com.aexo.nimbleway.core.MessageType;
-import br.com.aexo.nimbleway.core.Publication;
-import br.com.aexo.nimbleway.core.Registration;
-import br.com.aexo.nimbleway.core.RegistrationCall;
-import br.com.aexo.nimbleway.core.ResultCall;
-import br.com.aexo.nimbleway.core.ResultError;
-import br.com.aexo.nimbleway.core.Subscription;
-import br.com.aexo.nimbleway.core.SubscriptionCall;
-import br.com.aexo.nimbleway.core.WampError;
-import br.com.aexo.nimbleway.core.WampException;
-import br.com.aexo.nimbleway.core.WampTransport;
-import br.com.aexo.nimbleway.core.messages.AbortMessage;
-import br.com.aexo.nimbleway.core.messages.CallMessage;
-import br.com.aexo.nimbleway.core.messages.EventMessage;
-import br.com.aexo.nimbleway.core.messages.GoodByeMessage;
-import br.com.aexo.nimbleway.core.messages.HelloMessage;
-import br.com.aexo.nimbleway.core.messages.InvocationMessage;
-import br.com.aexo.nimbleway.core.messages.PublishMessage;
-import br.com.aexo.nimbleway.core.messages.PublishedMessage;
-import br.com.aexo.nimbleway.core.messages.RegisterMessage;
-import br.com.aexo.nimbleway.core.messages.RegisteredMessage;
-import br.com.aexo.nimbleway.core.messages.ReplyErrorMessage;
-import br.com.aexo.nimbleway.core.messages.ResultMessage;
-import br.com.aexo.nimbleway.core.messages.SubscribeMessage;
-import br.com.aexo.nimbleway.core.messages.SubscribedMessage;
-import br.com.aexo.nimbleway.core.messages.UnregisterMessage;
-import br.com.aexo.nimbleway.core.messages.UnregisteredMessage;
-import br.com.aexo.nimbleway.core.messages.UnsubscribeMessage;
-import br.com.aexo.nimbleway.core.messages.UnsubscribedMessage;
-import br.com.aexo.nimbleway.core.messages.WampMessage;
-import br.com.aexo.nimbleway.core.messages.WelcomeMessage;
-import br.com.aexo.nimbleway.utils.SpinLock;
+import br.com.aexo.nimbleway.client.connection.ClientTransport;
+import br.com.aexo.nimbleway.client.interaction.Invocation;
+import br.com.aexo.nimbleway.client.interaction.MessageType;
+import br.com.aexo.nimbleway.client.interaction.Publication;
+import br.com.aexo.nimbleway.client.interaction.Registration;
+import br.com.aexo.nimbleway.client.interaction.RegistrationCall;
+import br.com.aexo.nimbleway.client.interaction.ResultCall;
+import br.com.aexo.nimbleway.client.interaction.ResultError;
+import br.com.aexo.nimbleway.client.interaction.Subscription;
+import br.com.aexo.nimbleway.client.interaction.SubscriptionCall;
+import br.com.aexo.nimbleway.client.interaction.WampError;
+import br.com.aexo.nimbleway.client.interaction.WampException;
+import br.com.aexo.nimbleway.client.messages.AbortMessage;
+import br.com.aexo.nimbleway.client.messages.CallMessage;
+import br.com.aexo.nimbleway.client.messages.EventMessage;
+import br.com.aexo.nimbleway.client.messages.GoodByeMessage;
+import br.com.aexo.nimbleway.client.messages.HelloMessage;
+import br.com.aexo.nimbleway.client.messages.InvocationMessage;
+import br.com.aexo.nimbleway.client.messages.PublishMessage;
+import br.com.aexo.nimbleway.client.messages.PublishedMessage;
+import br.com.aexo.nimbleway.client.messages.RegisterMessage;
+import br.com.aexo.nimbleway.client.messages.RegisteredMessage;
+import br.com.aexo.nimbleway.client.messages.ReplyErrorMessage;
+import br.com.aexo.nimbleway.client.messages.ResultMessage;
+import br.com.aexo.nimbleway.client.messages.SubscribeMessage;
+import br.com.aexo.nimbleway.client.messages.SubscribedMessage;
+import br.com.aexo.nimbleway.client.messages.UnregisterMessage;
+import br.com.aexo.nimbleway.client.messages.UnregisteredMessage;
+import br.com.aexo.nimbleway.client.messages.UnsubscribeMessage;
+import br.com.aexo.nimbleway.client.messages.UnsubscribedMessage;
+import br.com.aexo.nimbleway.client.messages.ClientMessage;
+import br.com.aexo.nimbleway.client.messages.WelcomeMessage;
+import br.com.aexo.nimbleway.client.utils.SpinLock;
 
 /**
  * represent this session to router
@@ -56,7 +56,7 @@ public class ClientSession {
 
 	private static Logger log = LoggerFactory.getLogger(ClientSession.class);
 
-	private WampTransport transport;
+	private ClientTransport transport;
 
 	private Long id;
 
@@ -74,9 +74,9 @@ public class ClientSession {
 
 	private Consumer<ClientSession> onOpenCallback;
 
-	private Map<WaitReplyKey, WaitReply<? extends WampMessage, ? extends Object>> waitReplies = new HashMap<WaitReplyKey, WaitReply<? extends WampMessage, ? extends Object>>();
+	private Map<WaitReplyKey, WaitReply<? extends ClientMessage, ? extends Object>> waitReplies = new HashMap<WaitReplyKey, WaitReply<? extends ClientMessage, ? extends Object>>();
 
-	private void waitReply(MessageType type, Long id, WaitReply<? extends WampMessage, ? extends Object> wr) {
+	private void waitReply(MessageType type, Long id, WaitReply<? extends ClientMessage, ? extends Object> wr) {
 		spinLock.lock();
 		waitReplies.put(new WaitReplyKey(type, id), wr);
 		spinLock.unlock();
@@ -86,7 +86,7 @@ public class ClientSession {
 	private <T> T retrieve(MessageType type, Long id) {
 		WaitReplyKey key = new WaitReplyKey(type, id);
 		spinLock.lock();
-		WaitReply<? extends WampMessage, ? extends Object> o = waitReplies.get(key);
+		WaitReply<? extends ClientMessage, ? extends Object> o = waitReplies.get(key);
 		waitReplies.remove(key);
 		spinLock.unlock();
 		return (T) o;
@@ -142,7 +142,7 @@ public class ClientSession {
 				wr.resolve(new ResultCall(message));
 			} else if (msg instanceof ReplyErrorMessage) {
 				ReplyErrorMessage message = (ReplyErrorMessage) msg;
-				WaitReply<WampMessage, Object> wr = retrieve(message.getType(), message.getRequestId());
+				WaitReply<ClientMessage, Object> wr = retrieve(message.getType(), message.getRequestId());
 				wr.reject(new WampError(message));
 			} else if (msg instanceof InvocationMessage) {
 				InvocationMessage message = (InvocationMessage) msg;
@@ -176,7 +176,7 @@ public class ClientSession {
 		});
 	}
 
-	public ClientSession(WampTransport transport, Consumer<ClientSession> onOpenCallback, Consumer<Exception> exceptionHandler) {
+	public ClientSession(ClientTransport transport, Consumer<ClientSession> onOpenCallback, Consumer<Exception> exceptionHandler) {
 		this.transport = transport;
 		this.onOpenCallback = onOpenCallback;
 		this.exceptionHandler = exceptionHandler;
@@ -242,7 +242,7 @@ public class ClientSession {
 		return waitReply(MessageType.CALL, msg.getId(), msg);
 	}
 
-	public <RESOLVED, MESSAGE extends WampMessage> Promise<RESOLVED, WampError, Object> waitReply(MessageType type, Long id, MESSAGE msg) {
+	public <RESOLVED, MESSAGE extends ClientMessage> Promise<RESOLVED, WampError, Object> waitReply(MessageType type, Long id, MESSAGE msg) {
 		WaitReply<MESSAGE, RESOLVED> wr = new WaitReply<MESSAGE, RESOLVED>(msg);
 		waitReply(type, id, wr);
 		transport.write(msg);

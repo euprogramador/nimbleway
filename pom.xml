@@ -35,23 +35,7 @@
 			<version>1.7.21</version>
 		</dependency>
 
-		<dependency>
-			<groupId>io.undertow</groupId>
-			<artifactId>undertow-core</artifactId>
-			<version>1.3.22.Final</version>
-		</dependency>
-
-		<dependency>
-			<groupId>io.undertow</groupId>
-			<artifactId>undertow-servlet</artifactId>
-			<version>1.3.22.Final</version>
-		</dependency>
-
-		<dependency>
-			<groupId>io.undertow</groupId>
-			<artifactId>undertow-websockets-jsr</artifactId>
-			<version>1.3.22.Final</version>
-		</dependency>
+		
 
 		<dependency>
 			<groupId>org.jdeferred</groupId>
@@ -91,10 +75,12 @@
 
 	<packaging>pom</packaging>
 	<modules>
-		<module>nimbleway-core</module>
-		<module>nimbleway-websocket-undertow-connection</module>
 		<module>nimbleway-integration-test</module>
 		<module>nimbleway-client</module>
+		<module>nimbleway-client-connection</module>
+		<module>nimbleway-client-undertowwebsocketconnection</module>
 		<module>nimbleway-router</module>
+		<module>nimbleway-router-connection</module>
+		<module>nimbleway-router-undertowwebsocketconnection</module>
 	</modules>
 </project>

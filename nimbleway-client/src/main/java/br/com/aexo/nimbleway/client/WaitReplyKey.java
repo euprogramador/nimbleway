@@ -1,6 +1,6 @@
 package br.com.aexo.nimbleway.client;
 
-import br.com.aexo.nimbleway.core.MessageType;
+import br.com.aexo.nimbleway.client.interaction.MessageType;
 
 class WaitReplyKey {
 
